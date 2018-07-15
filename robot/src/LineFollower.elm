@@ -10,6 +10,12 @@ main =
 
 output : Input -> Output
 output input =
-    { leftMotor = input.lightSensor
-    , rightMotor = 100.0 - input.lightSensor
-    }
+    if input.distanceSensor > 50 then
+        { leftMotor = input.lightSensor
+        , rightMotor = 100 - input.lightSensor
+        }
+
+    else
+        { leftMotor = 0
+        , rightMotor = 0
+        }

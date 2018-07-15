@@ -8,14 +8,14 @@ port outputs : Output -> Cmd msg
 
 
 type alias Input =
-    { lightSensor : Float
-    , distanceSensor : Float
+    { lightSensor : Int
+    , distanceSensor : Int
     }
 
 
 type alias Output =
-    { leftMotor : Float
-    , rightMotor : Float
+    { leftMotor : Int
+    , rightMotor : Int
     }
 
 
