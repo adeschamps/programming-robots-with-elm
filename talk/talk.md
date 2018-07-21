@@ -89,6 +89,15 @@ In perception:
   better. (also, there are existing libraries and algorithms to
   leverage)
 
+  Optimization is about understanding how things work under the hood,
+  and catering to them.
+
+  Comparison: In functional programming, we sometimes think about tail
+  call optimizations. In doing so, our mind and reasoning has skipped
+  over multiple layers of abstraction. Rather than think about how a
+  compiler will optimize our code, sometimes we just need to use a low
+  level language so we can be sure of the result.
+
 Behaviour:
 - Elm works well here.
 - Decision trees can be expressed naturally. A naive implementation
