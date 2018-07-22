@@ -27,22 +27,22 @@ const updateInput = function() {
   const distanceSensor = new ev3.UltrasonicSensor();
   if (lightSensor.connected && distanceSensor.connected) {
     // Read real sensors
-    return function() {
+    return () => {
       app.ports.inputs.send({
-        lightSensor: lightSensor.getValue(),
-        distanceSensor: distanceSensor.getValue(),
+        lightSensor : lightSensor.getValue(),
+        distanceSensor : distanceSensor.getValue(),
       });
     };
   } else {
     // Mock inputs
     var time = 0.0;
-    return function() {
+    return () => {
       time += 1;
-      brightness = 50 + 10 * Math.sin(time*0.1);
+      brightness = Math.round(50 + 10 * Math.sin(time * 0.1));
       distance = 50 + (time % 40) - 20;
       app.ports.inputs.send({
-        lightSensor: brightness,
-        distanceSensor: distance,
+        lightSensor : brightness,
+        distanceSensor : distance,
       });
     };
   }
