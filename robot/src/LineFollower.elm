@@ -3,19 +3,38 @@ module LineFollower exposing (main)
 import Robot exposing (Input, Output, Robot)
 
 
-main : Robot ()
+main : Robot State
 main =
-    Robot.reactive output
-
-
-output : Input -> Output
-output input =
-    if input.distanceSensor > 50 then
-        { leftMotor = input.lightSensor
-        , rightMotor = 100 - input.lightSensor
+    Robot.program
+        { init = Blocked
+        , update = update
+        , output = output
         }
+
+
+type State
+    = Blocked
+    | Unblocked
+
+
+update : Input -> State -> State
+update input state =
+    if input.distanceSensor < 50 then
+        Blocked
 
     else
-        { leftMotor = 0
-        , rightMotor = 0
-        }
+        Unblocked
+
+
+output : Input -> State -> Output
+output input state =
+    case state of
+        Blocked ->
+            { leftMotor = 0
+            , rightMotor = 0
+            }
+
+        Unblocked ->
+            { leftMotor = input.lightSensor
+            , rightMotor = 1.0 - input.lightSensor
+            }
