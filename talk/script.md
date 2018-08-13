@@ -161,18 +161,96 @@ output input state =
 This feels like a reasonably nice way to describe a robot's
 behaviour. It's largely declarative, so it's easy to see what the
 robot will do in a given situation. And the stateful parts of it are
-clearly delineated. And it works.
+clearly delineated. So let's see how this works.
 
 <!-- Run the robot -->
 
 # Wiring this up
 
+The code to wire all this up is actually quite simple. Most of the
+hard work has already been done by the ev3dev project. On the
+JavaScript side we set a timer. Every so often, we use the ev3dev APIs
+to read the sensors, then we bundle up all the readings into an object
+and send it through a port. The Elm app subscribes to that port. Every
+time it gets new inputs, it runs the `update` function, then it calls
+the `output` function and sends the result back to JavaScript through
+the `outputs` port. JavaScript takes that command and uses the ev3dev
+APIs to set motor speeds. And that's about it.
+
+<!-- I'm not sure how much code to show here. -->
+
+```elm
+type alias Input =
+    { -- ...
+    }
+
+port inputs : (Input -> msg) -> Sub msg
+
+update config msg model =
+    case msg of
+        NewInput input ->
+            let newState = config.update input model.state
+                output = config.output input newState
+            in ( { model | state = newState }, outputs output )
+```
+
+```js
+setInterval(updateInput, 50);
+
+function updateInput () {
+    const inputs = { /* ... */ };
+    app.ports.inputs.send(inputs);
+}
+```
+
+```elm
+type alias Output =
+    { -- ...
+    }
+
+port outputs : Output -> Cmd msg
+```
+
+```js
+app.ports.outputs.subscribe(handleOutputs);
+
+function handleOutputs(outputs) {
+    /* ... */
+}
+```
 
 
 ...
 
+# Wrapping up
 
+Going back to the questions we originally set out to answer,
 
+- Can Elm be used to program robots?
 
+Yes, it can.
 
-# Can it be used for robotics
+- Is it an effective language for robots?
+
+I would say yes. Everything that I tried to do, I was able to do
+without resorting to any hacks. I could imagine things could get
+challenging if you were dealing with hardware that can't run
+JavaScript, or if you need libraries that don't work with Elm. But for
+what I was doing here, I think it worked well.
+
+- Is it delightful?
+
+That's subjective. I can speak for myself, that I enjoyed it. I think
+that Elm made it easy to model the different states that a robot can
+be in, and I think the declarative nature of Elm made it easy to
+understand why a particular state results in a particular output. If
+anything, it was fun to explore, and to do something a little
+unconventional. I would encourage you to take a look at the code, and
+if this is an approach that resonates you, go and explore!
+
+I'd like to thank Matt Griffith for mentoring me through my first
+conference talk, as well as Mike Onslow and the rest of the Elm
+Detroit Meetup group for their helpful feedback.
+
+My slides are available online. You can reach my on Slack or by email,
+and I'd love to talk to you. Thank you!
