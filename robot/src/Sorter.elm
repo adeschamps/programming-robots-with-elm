@@ -1,6 +1,6 @@
 module Sorter exposing (main)
 
-import Curvature exposing (Curvature)
+import Curvature
 import InfluxDB
 import LightCalibration
 import Robot exposing (Input, Output, Robot)
@@ -22,7 +22,7 @@ main =
 
 type alias State =
     { front : Front
-    , curvature : Curvature
+    , curvature : Curvature.State
     , lightCalibration : LightCalibration.Parameters
     }
 
@@ -37,7 +37,6 @@ output input state =
     case state.front of
         Open ->
             LightCalibration.corrected state.lightCalibration input.lightSensor
-                |> Debug.log "brightness"
                 |> followLine
 
         Blocked ->
@@ -75,10 +74,9 @@ update input state =
             LightCalibration.update input.lightSensor state.lightCalibration
     in
     { front = front
-    , curvature = Curvature.update input state.curvature
+    , curvature = state.curvature |> Curvature.update { left = input.leftMotor, right = input.rightMotor }
     , lightCalibration = lightCalibration
     }
-        |> Debug.log "state"
 
 
 metrics : Input -> State -> List InfluxDB.Datum
@@ -92,7 +90,7 @@ metrics input state =
                 0.0
 
         time =
-            Just input.time
+            Just (input.time * 1000000)
     in
     [ InfluxDB.Datum "sensor" [ ( "type", "light" ) ] input.lightSensor time
     , InfluxDB.Datum "sensor" [ ( "type", "distance" ) ] (toFloat input.distanceSensor) time
@@ -100,3 +98,4 @@ metrics input state =
     , InfluxDB.Datum "motor" [ ( "side", "left" ) ] (toFloat input.leftMotor) time
     , InfluxDB.Datum "motor" [ ( "side", "right" ) ] (toFloat input.rightMotor) time
     ]
+        ++ Curvature.metrics state.curvature time
