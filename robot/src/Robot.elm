@@ -68,8 +68,8 @@ reactive output =
 
 stateful : Config state -> Robot state
 stateful robot =
-    Platform.worker
         { init = \flags -> ( { flags = flags, state = robot.init }, Cmd.none )
+    Platform.programWithFlags
         , update = update robot
         , subscriptions = \_ -> inputs NewInput
         }

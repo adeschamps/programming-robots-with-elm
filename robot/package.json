@@ -1,5 +1,9 @@
 {
   "dependencies": {
-    "ev3dev-lang": "^1.0.0"
+    "ev3dev-lang": "^1.0.0",
+    "xhr2": "^0.1.4"
+  },
+  "devDependencies": {
+    "elm": "^0.18.0"
   }
 }
