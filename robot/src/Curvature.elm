@@ -1,4 +1,4 @@
-module Curvature exposing (Inputs, State, init, metrics, update)
+module Curvature exposing (Curve(..), Inputs, State, curve, init, metrics, update)
 
 import InfluxDB
 
@@ -14,9 +14,9 @@ type State
         { previous : Maybe Inputs
         , curve : Curve
         , instant : Float
-        , average_1 : Float
-        , average_3 : Float
-        , average_5 : Float
+        , average_0_5 : Float
+        , average_1_0 : Float
+        , average_2_0 : Float
         }
 
 
@@ -32,9 +32,9 @@ init =
         { previous = Nothing
         , curve = Straight
         , instant = 0.0
-        , average_1 = 0.0
-        , average_3 = 0.0
-        , average_5 = 0.0
+        , average_0_5 = 0.0
+        , average_1_0 = 0.0
+        , average_2_0 = 0.0
         }
 
 
@@ -70,49 +70,72 @@ update current (State state) =
             else
                 0.0
 
-        average_1 =
+        average_0_5 =
+            let
+                alpha =
+                    1.0 - e ^ (-totalTravel / 0.5)
+            in
+            state.average_0_5 * (1 - alpha) + instant * alpha
+
+        average_1_0 =
             let
                 alpha =
                     1.0 - e ^ (-totalTravel / 1.0)
             in
-            state.average_1 * (1 - alpha) + instant * alpha
+            state.average_1_0 * (1 - alpha) + instant * alpha
 
-        average_3 =
+        average_2_0 =
             let
                 alpha =
-                    1.0 - e ^ (-totalTravel / 3.0)
+                    1.0 - e ^ (-totalTravel / 2.0)
             in
-            state.average_3 * (1 - alpha) + instant * alpha
-
-        average_5 =
-            let
-                alpha =
-                    1.0 - e ^ (-totalTravel / 5.0)
-            in
-            state.average_5 * (1 - alpha) + instant * alpha
+            state.average_2_0 * (1 - alpha) + instant * alpha
 
         curve =
-            calculateCurve average_5 state.curve
+            calculateCurve average_1_0 state.curve
     in
     State
         { previous = Just current
         , curve = curve
         , instant = instant
-        , average_1 = average_1
-        , average_3 = average_3
-        , average_5 = average_5
+        , average_0_5 = average_0_5
+        , average_1_0 = average_1_0
+        , average_2_0 = average_2_0
         }
 
 
 calculateCurve : Float -> Curve -> Curve
 calculateCurve curvature current =
-    Straight
+    case current of
+        Left ->
+            if curvature > -0.2 then
+                Straight
+
+            else
+                Left
+
+        Straight ->
+            if curvature < -0.25 then
+                Left
+
+            else if curvature > 0.25 then
+                Right
+
+            else
+                Straight
+
+        Right ->
+            if curvature < 0.2 then
+                Straight
+
+            else
+                Right
 
 
 metrics : State -> Maybe Int -> List InfluxDB.Datum
 metrics (State state) time =
     [ InfluxDB.Datum "curve" [ ( "window", "instant" ) ] state.instant time
-    , InfluxDB.Datum "curve" [ ( "window", "1_turns" ) ] state.average_1 time
-    , InfluxDB.Datum "curve" [ ( "window", "3_turns" ) ] state.average_3 time
-    , InfluxDB.Datum "curve" [ ( "window", "5_turns" ) ] state.average_5 time
+    , InfluxDB.Datum "curve" [ ( "window", "0_5_turns" ) ] state.average_0_5 time
+    , InfluxDB.Datum "curve" [ ( "window", "1_0_turns" ) ] state.average_1_0 time
+    , InfluxDB.Datum "curve" [ ( "window", "2_0_turns" ) ] state.average_2_0 time
     ]
