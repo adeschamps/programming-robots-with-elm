@@ -6,13 +6,27 @@ import LightCalibration
 import Robot exposing (Input, Output, Robot)
 
 
-main : Robot State
+type alias State =
+    { front : Front
+    , bumper : Bumper
+    , claw : Claw
+    , curvature : Curvature.State
+    , lightCalibration : LightCalibration.Parameters
+    }
+
+
+main : Robot { state : State, goal : Goal }
 main =
     Robot.stateful
         { init =
-            { front = Blocked
-            , curvature = Curvature.init
-            , lightCalibration = LightCalibration.init
+            { state =
+                { front = Blocked
+                , bumper = BumperUnpressed
+                , claw = ClawOpen
+                , curvature = Curvature.init
+                , lightCalibration = LightCalibration.init
+                }
+            , goal = Initialize
             }
         , output = output
         , update = update
@@ -20,26 +34,52 @@ main =
         }
 
 
-type alias State =
-    { front : Front
-    , curvature : Curvature.State
-    , lightCalibration : LightCalibration.Parameters
-    }
+type Goal
+    = Initialize
+    | Search
+    | GrabObject
+    | TurnAround
+    | DropObject
 
 
 type Front
-    = Open
-    | Blocked
+    = Blocked
+    | Unblocked
 
 
-output : Input -> State -> Output
-output input state =
-    case state.front of
-        Open ->
-            LightCalibration.corrected state.lightCalibration input.lightSensor
-                |> followLine
+type Bumper
+    = BumperPressed
+    | BumperUnpressed
 
-        Blocked ->
+
+type Claw
+    = ClawOpen
+    | ClawClosed
+
+
+output : Input -> { goal : Goal, state : State } -> Output
+output input { state, goal } =
+    case goal of
+        Initialize ->
+            stop
+
+        Search ->
+            case state.front of
+                Blocked ->
+                    stop
+
+                Unblocked ->
+                    LightCalibration.corrected state.lightCalibration input.lightSensor
+                        |> followLine
+                        |> (\o -> { o | lights = Just (curvatureLights state.curvature) })
+
+        GrabObject ->
+            stop
+
+        TurnAround ->
+            stop
+
+        DropObject ->
             stop
 
 
@@ -57,30 +97,82 @@ stop =
     }
 
 
-update : Input -> State -> State
-update input state =
+update : Input -> { state : State, goal : Goal } -> { state : State, goal : Goal }
+update input { state, goal } =
+    let
+        newState =
+            updateState input state
+
+        newGoal =
+            updateGoal newState goal
+    in
+    { state = newState, goal = newGoal }
+
+
+updateState : Input -> State -> State
+updateState input state =
     let
         front =
-            if state.front == Open && input.distanceSensor < 45 then
+            if state.front == Unblocked && input.distanceSensor < 45 then
                 Blocked
 
             else if state.front == Blocked && input.distanceSensor > 55 then
-                Open
+                Unblocked
 
             else
                 state.front
 
+        bumper =
+            if input.touchSensor then
+                BumperPressed
+
+            else
+                BumperUnpressed
+
         lightCalibration =
             LightCalibration.update input.lightSensor state.lightCalibration
     in
-    { front = front
-    , curvature = state.curvature |> Curvature.update { left = input.leftMotor, right = input.rightMotor }
-    , lightCalibration = lightCalibration
+    { state
+        | front = front
+        , bumper = bumper
+        , curvature = state.curvature |> Curvature.update { left = input.leftMotor, right = input.rightMotor }
+        , lightCalibration = lightCalibration
     }
 
 
-metrics : Input -> State -> List InfluxDB.Datum
-metrics input state =
+updateGoal : State -> Goal -> Goal
+updateGoal state goal =
+    case goal of
+        Initialize ->
+            Search
+
+        Search ->
+            if state.bumper == BumperPressed then
+                GrabObject
+
+            else
+                goal
+
+        GrabObject ->
+            if state.claw == ClawClosed then
+                TurnAround
+
+            else
+                goal
+
+        TurnAround ->
+            DropObject
+
+        DropObject ->
+            if state.claw == ClawOpen then
+                Search
+
+            else
+                goal
+
+
+metrics : Input -> { a | state : State } -> List InfluxDB.Datum
+metrics input { state } =
     let
         boolToFloat b =
             if True then
