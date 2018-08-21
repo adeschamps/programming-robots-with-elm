@@ -112,7 +112,7 @@ calculateCurve curvature current =
                 Straight
 
             else
-                Left
+                current
 
         Straight ->
             if curvature < -0.25 then
@@ -122,14 +122,14 @@ calculateCurve curvature current =
                 Right
 
             else
-                Straight
+                current
 
         Right ->
             if curvature < 0.2 then
                 Straight
 
             else
-                Right
+                current
 
 
 metrics : State -> Maybe Int -> List InfluxDB.Datum
