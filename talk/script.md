@@ -18,7 +18,7 @@ program a robot?"
 
 I'm Anthony Deschamps. I work in robotics. Here are my credentials:
 
-> photo from RoboFest
+> photo from RoboFest when I was ~11 years old
 
 ## LEGO Robotics
 
@@ -30,15 +30,18 @@ influential moments on my life.
 
 At the time, LEGO Mindstorms used a 16 bit microcontroller, and it had
 five slots for storing programs, which you uploaded to it using an
-infrared transmitter. These days, it's basically a full blown computer
-in a similar form factor, but the basic idea is the same. You get a
+infrared transmitter that was plugged in to the serial port on your
+computer. These days, it's basically a full blown computer in a
+similar form factor, but the basic idea is the same. You get a
 controller and a handful of motors and sensors, all wrapped up inside
 LEGO bricks. It comes with software to program the robot by dragging
 and dropping blocks. It's really compelling for kids of all ages,
 because you can basically make a flowchart, click run, and then your
 robot will *move*.
 
-<!-- Screenshot of EV3 software -->
+> Screenshot: EV3 software
+
+## ev3dev
 
 But the best part, at least for me, is ev3dev, which is a Debian
 distribution that you can boot from a micro SD card. It provides low
@@ -46,8 +49,6 @@ level access to the sensors and motors - in true Unix fashion, they
 show up as files in slash dev. There are also API bindings in various
 languages. There's C and C++, of course, as well as Python, Go, and
 ... JavaScript!
-
-<!-- Slide title: All the work I didn't have to do -->
 
 So, if we can program a LEGO robot using JavaScript, and we can
 compile Elm to JavaScript... you see where this is going. So much of
@@ -58,7 +59,7 @@ Also, if you shut it down and take out the SD card, then it goes back
 to LEGO's standard firmware, so if your kids have one of these kits,
 you can play around with it without ever stepping on their toes.
 
-> Slide
+## End of introduction
 
 So, Elm is a language that's focused on a particular application, but...
 
@@ -66,9 +67,12 @@ So, Elm is a language that's focused on a particular application, but...
 
 If it couldn't then this would be a fairly short talk.
 
-- Is it __delightful__ for robotics? (sometimes!)
+- Is in an **effective** language for robotics?
 
-- What can we learn? (what parallels with web dev?)
+- Is it a **delightful** language for robotics?
+
+And along the way, we'll see what we can learn, and maybe draw some
+parallels with web development.
 
 # Body intro
 
@@ -86,12 +90,12 @@ Now, let's see how that maps to the Elm architecture. Here's the root
 of a typical Elm application:
 
 ```haskell
-Html.beginnerProgram :
-    { model : model
+Browser.sandbox :
+    { init : model
     , update : msg -> model -> model
     , view : model -> Html msg
     }
-    -> Program Never model msg
+    -> Program () model msg
 ```
 
 If we break this down a bit, we can see those areas I just
@@ -99,25 +103,16 @@ described. We define a type that models the state of the world, which
 in this case is the state of a web application.  We observe the
 outside world by receiving messages, then we make decisions about what
 the application should do in the update function. And the view
-function is one of the two ways that we affect the outside world (the
-other one being sending out a command).
+function is the primary way that we affect the outside world. Even
+though Elm is a pure language, we still have this one giant side
+effect - it's kept in one place, and the actual effects are performed
+by the Elm runtime.
 
 So, let's define our own version for robots. Under the hood it'll be
 implemented a bit differently, but we'll keep the same basic
-interface. The main difference is that the input and output are
-concrete types, because they're dictated by the actual, physical
-robot. Input is a record of the current values of all the sensors, and
-instead of rendering Html in your view function, you "render" the
-desired speed or state of your motors.
+interface.
 
 ```haskell
-Robot.program :
-    { init : state
-    , update : Input -> state -> state
-    , output : Input -> state -> Output
-    }
-    -> Robot state
-
 type alias Input =
     { lightSensor : Float
     , distanceSensor : Float
@@ -129,7 +124,32 @@ type alias Output =
     , rightMotor : Float
     -- ...
     }
+
+Robot.program :
+    { init : state
+    , update : Input -> state -> state
+    , output : Input -> state -> Output
+    }
+    -> Robot state
 ```
+
+We have an `init` function, just like we're used to, except I haven't
+exposed anything to do with commands because our robot isn't going to
+need them.
+
+Our `update` function is the same, except instead of defining a
+message type we have a concrete type for `Input`, because that's
+dictated by the actual, physical hardware. It's a record of the
+current values of all the sensors that are plugged in. We'll set this
+up so that the `update` function gets called every time there's new
+sensor inputs available.
+
+Instead of a `view` function, we have an `output` function. Rather
+than render HTML to affect the world, we "render" the desired speed or
+state of each of our motors. So whereas a typical Elm app has a
+declarative view, so that what you see on the page always reflects the
+model, our robot has declarative outputs, so that what it's doing
+always reflects its internal state and its inputs.
 
 # A simple robot
 
@@ -137,7 +157,19 @@ Before getting into how this is implemented under the hood, let's take
 a look at how it feels to use it for something simple. We'll make our
 robot follow a line, and not crash into things.
 
-<!-- Insert diagram of line following -->
+Our robot has a light sensor that points at the ground. It has an LED
+that illuminates a surface, and a photosensor that measures the
+intensity of the light that was reflected. It gives us a percentage,
+where 0% means really dark and 100% means really bright.
+
+We also have an ultrasonic distance sensor on the front. It emits a
+high pitched sound called a chirp and then measures how long it takes
+for the sound to be reflected back, just like a bat. If you've driven
+a car that beeps when you're about to back into an object, this is
+basically how it works. This sensor gives a measurement between 0 and
+255 centimeters.
+
+> Diagram: line following algorithm
 
 So, here's the basic algorithm to follow a line. We actually want to
 follow the edge of the line. If the sensor reads dark, then we drive
@@ -145,9 +177,6 @@ one motor, which causes the robot to move forward and also turn
 towards the white side. If the sensor reads bright, then we drive the
 other motor, which causes the robot to turn towards the dark side. So
 the result is that we sort of zig zag and progress forward.
-
-<!-- Possibly insert gif of Shaq shimmying, which is an accurate -->
-<!-- demonstration of this algorithm in practice. -->
 
 Here's what the code looks like. The state of our robot can be either
 blocked or unblocked.
@@ -196,7 +225,7 @@ behaviour. It's largely declarative, so it's easy to see what the
 robot will do in a given situation. And the stateful parts of it are
 clearly delineated. So let's see how this works.
 
-<!-- Run the robot -->
+> Run the robot!
 
 # Wiring this up
 
@@ -210,9 +239,10 @@ the `output` function and sends the result back to JavaScript through
 the `outputs` port. JavaScript takes that command and uses the ev3dev
 APIs to set motor speeds. And that's about it.
 
-<!-- I'm not sure how much code to show here. -->
+> TODO: I'm not sure how much code to show here.
 
 ```haskell
+-- Subscribe to inputs, update state, and send outputs
 type alias Input =
     { -- ...
     }
@@ -228,6 +258,7 @@ update config msg model =
 ```
 
 ```js
+// Read sensors and send through ports
 setInterval(updateInput, 50);
 
 function updateInput () {
@@ -237,6 +268,7 @@ function updateInput () {
 ```
 
 ```haskell
+-- Send outputs through port
 type alias Output =
     { -- ...
     }
@@ -245,6 +277,7 @@ port outputs : Output -> Cmd msg
 ```
 
 ```js
+// Subscribe to outputs and set motor speeds
 app.ports.outputs.subscribe(handleOutputs);
 
 function handleOutputs(outputs) {
@@ -274,20 +307,22 @@ let's make a robot that can:
 
 - Follow a line around this oval track
 - When it bumps into an object, grab it and move it off the track
-  - If it's on the end of the oval, move it _outside_ the track
-  - If it's on the side of the oval, move it _inside_ the track
+- Always push objects _outside_ the oval
 
 This is actually a pretty good start for a grade school level robotics
 challenge. The competitions that I was in as a kid were a bit more
 challenging, but we also had about four months to prepare. And we
 didn't have Elm, so it took longer.
 
+Of course, if this was _actually_ a grade school robotics challenge,
+then there would be a fun story to set up this scenario.
+
 ## Perception
 
 As far as perception goes, we have two new problems on top of
 following the line. The first is that we need to known when we've
-encountered an obstacle, and the second is that we need to know where
-we are on the track when that happens.
+encountered an obstacle, and the second is that we need to know which
+side of the line is the outside of the track.
 
 The first one is easy. We have a touch sensor on the front of the
 robot. When this bumper is pressed it returns true, and when it's not
@@ -394,7 +429,7 @@ calculateCurve curvature current =
 When I first wrote that function I felt like it was kind of _big_, or
 spread out, and I tried to refactor it to make it more compact. But
 other than the fact that elm-format puts a generous amount of
-whitespace in there, I realized that this function say exactly what it
+whitespace in there, I realized that this function says exactly what it
 needs to and no more. So I decided to stop worrying about it.
 
 What we're essentially doing here is taking data from one type of
@@ -406,12 +441,12 @@ and turning them into more meaningful information.
 
 ## Behaviour
 
-One of the things I enjoyed about using Elm is, of course, the type
-system. In some cases, that just means mapping raw input to values
-that are more semantically meaningful. For example, the update
-function contains this code, which looks at the value of the touch
-sensor, which is a boolean, and turns it into a value of a new type,
-which can be "Pressed" or "Unpressed".
+One of the things I enjoy about Elm is using the type system to model
+the different states my programs can be in. In some cases, that just
+means mapping raw input to values that are more semantically
+meaningful. For example, the update function contains this code, which
+looks at the value of the touch sensor, which is a boolean, and turns
+it into a value of a new type, which can be "Pressed" or "Unpressed".
 
 <!-- Refer to "Solving the Boolean Identity Crisis" -->
 
@@ -454,69 +489,134 @@ somebody. I think this reads pretty nicely - "when our current goal is
 
 ## Control
 
-# Downsides
+The third area ef robotics that I mentioned, control, is something
+we've already talked about. The line following algorithm I described
+is an example of a proportional controller, or P controller. This is
+where you have value that you're measuring, as well as a target value,
+called a set-point. If you take the difference between your current
+measurement and your desired value, that's your error. Then you set
+your output value to be proportional to the error.
 
-I don't think it would be fair to go through all this and not talk
-about the downsides. What are some reasons why you _wouldn't_ want to
-program a robot in Elm?
+In the case of our line follower, the light sensor is our input, and
+our set-point, or target, is for the sensor to be on the edge of the
+line. So we set the speeds of our motors to values that are
+proportional to the current reading of the light sensor.
+
+Not all controllers are that simple. P controllers are a simpler case
+of the more general PID controller. If you want to know more about
+that, find the nearest mechanical or electrical engineer - they'll be
+able to tell you all about control theory.
+
+The common thread in control theory is that you have some output which
+is a function of your inputs - which is really easy to express in a
+functional languge - but sometimes your output also depends on some
+internal state. We sort of saw an example of that when measuring the
+curvature of the line. The output value depends not just on the
+current inputs, but also on a running average.
+
+The thing about controls is that these simple control algorithms tend
+to get composed together into more complicated controllers. It's
+common to ask questions like "why isn't the system doing what I'm
+telling it to do?" Your decision making code might have decided that
+the vehicle should drive at a certain speed, but there are multiple
+levels of controllers between it and the actual motors. At each level,
+there might be a bit of state, and although individually they're quite
+simple, it can be hard to keep track of.
+
+<!-- I think the last few paragraphs are rather meandering and not really -->
+<!-- that interesting in relation to Elm. -->
+
+<!-- Maybe this is more interesting: -->
+
+Another place where Elm's type system is useful is in constraining the
+types of output that are valid. We have a robot with three motors on
+it. Two of them are for driving and the third is for grabbing
+things. Let's say we decide that the claws should only open or close
+if the robot isn't moving.
+
+> TODO: Finish this section
+
+# Conclusion
+
+Going back to the questions we originally set out to answer,
+
+- Can Elm be used to program a robot?
+
+Yes - we have a robot, we put Elm on it, and it did something.
+
+- Is it an **effective** language for robotics?
+
+There are actually two questions here that could easily be conflated.
+
+- Is it an effective **language** for robotics?
+- Is it an effective **platform** for robotics?
+
+## Downsides
+
+Well, there are some reasons why you _wouldn't_ want to program a
+robot in Elm?
 
 One of the main difficulties I encountered was to do with
 performance. This isn't an issue with Elm as a language, per se, but
 it is a fairly heavy software stack to run on this hardware. This is a
 single core processor running at 300 MHz. To put that in perspective,
-it takes about five to ten seconds for node.js to start up on this
-device.
+it takes about five to ten seconds just for node.js to start up on
+this device.
 
 In order for the robot to be responsive it needs to be able to read
 inputs, make decisions, and produce an output - _reliably_ - at a rate
 on the order of tens of milliseconds. That means that any time node.js
 stops to do a garbage collection - which might take a bit of time on
-this hardware - the robot just becomes unresponsive until its
+this hardware - the robot just becomes unresponsive until it's
 finished, and by that time it may have lost track of its route.
 
 It definitely doesn't help that I'm sending data over the network to
 visualize it. With a single core processor, that means that any time
-doing an HTTP POST is time _not_ spent reading the sensors.
+doing an HTTP POST is time _not_ spent reading the sensors. So there's
+surely room to optimize things, but the bottom line is this - if you
+want to build a real time system targeting low end hardware, any
+language with a garbage collector is going to create some challenges
+for you.
 
-The bottom line is this - if you want to build a real time system
-targeting low end hardware, any language with a garbage collector is
-going to create some challenges for you.
-
-That said, my original goal was to explore whether Elm is a nice
+That said, my original goal was to explore whether Elm is an effective
 _language_ for robots. Whether Elm compiled to JavaScript running on
-Node is a nice _platform_ - that's somewhat besides the point. But I
-think the takeaway is that if you want to put Elm on a robot you might
-need more powerful hardware.
+Node is an effective _platform_ - that's somewhat beside the
+point. But I think the takeaway is that if you want to put Elm on a
+robot you might need more powerful hardware.
 
-# Wrapping up
+## Upsides
 
-Going back to the questions we originally set out to answer,
-
-- Can Elm be used to program robots?
-
-Yes, it can.
-
-- Is it an effective language for robots?
+So is Elm an effective _language_ for robotics?
 
 I would say yes. Everything that I tried to do, I was able to do
-without resorting to any hacks. I could imagine things could get
-challenging if you were dealing with hardware that can't run
-JavaScript, or if you need libraries that don't work with Elm. But for
-what I was doing here, I think it worked well.
+without resorting to any hacks. I imagine things could get challenging
+if you were dealing with hardware that can't run JavaScript, or if you
+need libraries that don't work with Elm. But for what I was doing
+here, I think it worked well.
 
-- Is it delightful?
+> Slide: summarize the following as bullet points
 
-That's subjective. I can speak for myself, that I enjoyed it. I think
-that Elm made it easy to model the different states that a robot can
-be in, and I think the declarative nature of Elm made it easy to
-understand why a particular state results in a particular output. If
-anything, it was fun to explore, and to do something a little
-unconventional. I would encourage you to take a look at the code, and
-if this is an approach that resonates with you, go and explore!
+Perception often involves some amount of state, and a pure language
+makes your inputs and state explicit. A lot of behaviour can be
+naturally expressed as state machines, and pattern matching with
+custom types is great for that. And a declarative approach to motor
+control has all the same benefits as a declarative approach to views.
+
+But the most important question I wanted to answer was...
+
+- Is it a **delightful** langugae for robotics?
+
+That's subjective, but I can speak for myself - I enjoyed it! I spent
+most of my time thinking about the problem, not the code. If anything,
+it was fun to explore, and to do something a little unconventional. I
+would encourage you to take a look at the code, and if this is an
+approach that resonates with you, go and explore!
+
+## Wrapping up
 
 I'd like to thank Matt Griffith for mentoring me through my first
 conference talk, as well as Mike Onslow and the rest of the Elm
 Detroit Meetup group for their helpful feedback.
 
-My slides are available online. You can reach my on Slack or by email,
+My slides are available online. You can reach me on Slack or by email,
 and I'd love to talk to you. Thank you!
