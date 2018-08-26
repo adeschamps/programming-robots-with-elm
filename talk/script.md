@@ -6,19 +6,17 @@ date: September 26, 2018
 
 # Introduction
 
-> screenshot of elm home page "a delightful language..."
+> Slide: Screenshot of the Elm home page: "a delightful language..."
 
 The Elm home page describes it as "a delightful language", and I
 really like that description because it focuses on the experience of
-using it - not just the technical aspects or the end result. Now, I'm
-not really a web developer. I mostly work in robotics. However, I
-still really like that idea of a language being delightful, and I
-wanted to answer the question "what would it be like to use Elm to
-program a robot?"
+using it - not just the technical aspects or the end result. But it
+specifically describes it as a language for webapps, which makes me
+wonder: is Elm a delightful language for other applications as well?
 
-I'm Anthony Deschamps. I work in robotics. Here are my credentials:
+I'm Anthony Deschamps. I like robots. Here are my credentials:
 
-> photo from RoboFest when I was ~11 years old
+> Slide: photo from RoboFest when I was 11
 
 ## LEGO Robotics
 
@@ -39,7 +37,8 @@ and dropping blocks. It's really compelling for kids of all ages,
 because you can basically make a flowchart, click run, and then your
 robot will *move*.
 
-> Screenshot: EV3 software
+> Screenshot: EV3 software - programming robots with flowcharts
+> [(Example)](http://encuentrocomicsevilla.com/wp-content/uploads/2017/04/Lego-Ev3-Software-Home.png)
 
 ## ev3dev
 
@@ -441,12 +440,12 @@ and turning them into more meaningful information.
 
 ## Behaviour
 
-One of the things I enjoy about Elm is using the type system to model
-the different states my programs can be in. In some cases, that just
-means mapping raw input to values that are more semantically
-meaningful. For example, the update function contains this code, which
-looks at the value of the touch sensor, which is a boolean, and turns
-it into a value of a new type, which can be "Pressed" or "Unpressed".
+Something I enjoy about Elm is using the type system to model the
+different states my programs can be in. In some cases, that just means
+mapping raw input to values that are more semantically meaningful. For
+example, the update function contains this code, which looks at the
+value of the touch sensor, which is a boolean, and turns it into a
+value of a new type, which can be "Pressed" or "Unpressed".
 
 <!-- Refer to "Solving the Boolean Identity Crisis" -->
 
@@ -487,6 +486,42 @@ somebody. I think this reads pretty nicely - "when our current goal is
 `Search`, if the bumper is `Pressed`, the our new goal is to
 `GrabObject`".
 
+> NOTE: I feel like the above paragraphs should be moved towards the
+> middle/end of this section.
+
+It's important that the behaviour logic be easy to read and
+understand, because once we start to consider all the states that the
+robot can be in, we find that it's a bit trickier than you might have
+thought. There are some transitions between states that we don't want
+to make.
+
+This sounds a bit like one of those "make impossible states
+impossible" situations. In some ways it is, but it's also a problem of
+making impossible _transitions_ impossible.
+
+> NOTE: It's possible to prevent invalid transitions using the type
+> system, but I don't think it's worth the effort and complexity
+> here. Instead, I want to tackle the problem by making transitions
+> between states simple to express and therefore simple to look at and
+> verify.
+
+For example, when the robot finds an object, it'll need to go through
+some maneuvers to grab it, move off of the path, let it go, and then
+return to the path. We definitely don't want to go back into the
+`Search` state right after letting go of the object, because at that
+moment there's no line to follow.
+
+> TODO: Finish designing the behaviour state machine
+>
+> ```haskell
+> type Goal
+>     = Initialize
+>     | Search
+>     | GrabObject
+>     | MoveObject
+> ```
+
+
 ## Control
 
 The third area ef robotics that I mentioned, control, is something
@@ -523,10 +558,8 @@ levels of controllers between it and the actual motors. At each level,
 there might be a bit of state, and although individually they're quite
 simple, it can be hard to keep track of.
 
-<!-- I think the last few paragraphs are rather meandering and not really -->
-<!-- that interesting in relation to Elm. -->
-
-<!-- Maybe this is more interesting: -->
+> NOTE: I feel like the last few paragraphs are rather meandering and
+> not really that interesting in relation to Elm.
 
 Another place where Elm's type system is useful is in constraining the
 types of output that are valid. We have a robot with three motors on
@@ -534,7 +567,42 @@ it. Two of them are for driving and the third is for grabbing
 things. Let's say we decide that the claws should only open or close
 if the robot isn't moving.
 
-> TODO: Finish this section
+The `Output` record we defined earlier is a direct, one-to-one
+interface to the motors, but we can define a custom type that makes
+controlling the claw and controlling the wheels mutually exclusive.
+
+```haskell
+-- This code will probably change a bit.
+
+type ClawAction
+    = ClawOpen
+    | ClawClosed
+
+type Action
+    = Claw ClawAction
+    | Wheels { left : Float, right : Float }
+
+output : Action -> Output
+output action =
+    case action of
+        Claw claw ->
+            { leftMotor = 0.0
+            , rightMotor = 0.0
+            , clawMotor =
+                case claw of
+                    ClawOpen ->
+                        1.0
+
+                    ClawClosed ->
+                        -1.0
+            }
+
+        Wheels { left, right } ->
+            { leftMotor = left
+            , rightMotor = right
+            , clawMotor = 0.0
+            }
+```
 
 # Conclusion
 
