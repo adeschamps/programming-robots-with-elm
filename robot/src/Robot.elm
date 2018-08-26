@@ -3,6 +3,7 @@ port module Robot exposing (Config, Input, Output, Robot, reactive, stateful)
 import Http
 import InfluxDB
 import Json.Decode as D
+import Time
 
 
 port inputs : (Input -> msg) -> Sub msg
@@ -30,17 +31,20 @@ type alias Output =
 
 type Msg
     = NewInput Input
+    | Tick
     | NoOp
 
 
 type alias Model model =
     { state : model
     , flags : Flags
+    , metrics : List InfluxDB.Datum
     }
 
 
 type alias Flags =
     { influxDB : Maybe InfluxDB.Config
+    , influxPeriod : Maybe Float
     }
 
 
@@ -68,11 +72,25 @@ reactive output =
 
 stateful : Config state -> Robot state
 stateful robot =
-        { init = \flags -> ( { flags = flags, state = robot.init }, Cmd.none )
     Platform.programWithFlags
+        { init = \flags -> ( { flags = flags, state = robot.init, metrics = [] }, Cmd.none )
         , update = update robot
-        , subscriptions = \_ -> inputs NewInput
+        , subscriptions = subscriptions
         }
+
+
+subscriptions : Model state -> Sub Msg
+subscriptions model =
+    let
+        ticks =
+            case model.flags.influxDB of
+                Just _ ->
+                    Time.every (model.flags.influxPeriod |> Maybe.withDefault 1000) (always Tick)
+
+                _ ->
+                    Sub.none
+    in
+    Sub.batch [ inputs NewInput, ticks ]
 
 
 update : Config state -> Msg -> Model state -> ( Model state, Cmd Msg )
@@ -86,15 +104,28 @@ update config msg model =
                 output =
                     config.output input newState
 
+                metrics =
+                    case config.generateMetrics of
+                        Just generate ->
+                            generate input newState ++ model.metrics
+
+                        _ ->
+                            []
+            in
+            ( { model | state = newState, metrics = metrics }, outputs output )
+
+        Tick ->
+            let
                 sendMetrics =
-                    case ( model.flags.influxDB, config.generateMetrics ) of
-                        ( Just influxConfig, Just generate ) ->
-                            InfluxDB.post influxConfig (generate input newState) |> Http.send (always NoOp)
+                    case model.flags.influxDB of
+                        Just influxConfig ->
+                            InfluxDB.post influxConfig model.metrics
+                                |> Http.send (always NoOp)
 
                         _ ->
                             Cmd.none
             in
-            ( { model | state = newState }, Cmd.batch [ outputs output, sendMetrics ] )
+            ( { model | metrics = [] }, sendMetrics )
 
         NoOp ->
             ( model, Cmd.none )
