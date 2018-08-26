@@ -87,6 +87,7 @@ followLine : Float -> Output
 followLine brightness =
     { leftMotor = brightness
     , rightMotor = 1.0 - brightness
+    , lights = Nothing
     }
 
 
@@ -94,7 +95,25 @@ stop : Output
 stop =
     { leftMotor = 0
     , rightMotor = 0
+    , lights = Just { left = { red = 1, green = 0 }, right = { red = 1, green = 0 } }
     }
+
+
+{-| Set the brick lights to indicate the direction of the detected
+curvature. Left/right are reversed, since they are labeled as if you
+are looking at the front of the robot.
+-}
+curvatureLights : Curvature.State -> Robot.BrickLights
+curvatureLights state =
+    case Curvature.curve state of
+        Curvature.Left ->
+            { left = { green = 0, red = 0 }, right = { green = 1, red = 0 } }
+
+        Curvature.Straight ->
+            { left = { green = 1, red = 0 }, right = { green = 1, red = 0 } }
+
+        Curvature.Right ->
+            { left = { green = 1, red = 0 }, right = { green = 0, red = 0 } }
 
 
 update : Input -> { state : State, goal : Goal } -> { state : State, goal : Goal }
