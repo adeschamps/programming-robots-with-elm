@@ -1,4 +1,4 @@
-port module Robot exposing (BrickLights, Config, Input, Output, Robot, reactive, stateful)
+port module Robot exposing (BrickLights, Config, Input, LedColor, Output, Robot, reactive, stateful)
 
 import Http
 import InfluxDB
@@ -26,6 +26,7 @@ type alias Input =
 type alias Output =
     { leftMotor : Float
     , rightMotor : Float
+    , clawMotor : Float
     , lights : Maybe BrickLights
     }
 

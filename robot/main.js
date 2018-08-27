@@ -10,6 +10,9 @@ const lightSensor = new ev3.LightSensor();
 const distanceSensor = new ev3.UltrasonicSensor();
 const touchSensor = new ev3.TouchSensor();
 
+// This constant is used to map speeds in the range [-1.0, 1.0] to actual outputs.
+const SPEED = 100;
+
 process.on("SIGINT", function() {
   console.log("Stopping...");
   leftMotor.start(0);
@@ -18,8 +21,8 @@ process.on("SIGINT", function() {
 });
 
 function handleOutputs(outputs) {
-  leftMotor.start(Math.round(100 * outputs.leftMotor));
-  rightMotor.start(Math.round(100 * outputs.rightMotor));
+  leftMotor.start(Math.round(SPEED * outputs.leftMotor));
+  rightMotor.start(Math.round(SPEED * outputs.rightMotor));
   // Handling lights seems to introduce a very long delay in the update loop.
   // const lights = outputs.lights;
   // if (lights) {

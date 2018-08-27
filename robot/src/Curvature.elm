@@ -1,6 +1,8 @@
-module Curvature exposing (Curve(..), Inputs, State, curve, init, metrics, update)
+module Curvature exposing (Curve(..), Inputs, State, curve, init, lights, metrics, update)
 
 import InfluxDB
+import Lights
+import Robot exposing (BrickLights)
 
 
 type Curve
@@ -139,3 +141,20 @@ metrics (State state) time =
     , InfluxDB.Datum "curve" [ ( "window", "1_0_turns" ) ] state.average_1_0 time
     , InfluxDB.Datum "curve" [ ( "window", "2_0_turns" ) ] state.average_2_0 time
     ]
+
+
+{-| Set the brick lights to indicate the direction of the detected
+curvature. Left/right are reversed, since they are labeled as if you
+are looking at the front of the robot.
+-}
+lights : State -> BrickLights
+lights (State { curve }) =
+    case curve of
+        Left ->
+            { left = Lights.off, right = Lights.green }
+
+        Straight ->
+            { left = Lights.green, right = Lights.green }
+
+        Right ->
+            { left = Lights.green, right = Lights.off }
