@@ -25,10 +25,15 @@ type Front
     | Unblocked
 
 
+type alias WheelOdometers =
+    { left : Int, right : Int }
+
+
 type alias State =
     { front : Front
     , bumper : Bumper
     , claw : Claw
+    , wheels : WheelOdometers
     , curvature : Curvature.State
     , travelDirection : Maybe TravelDirection
     , lightCalibration : LightCalibration.Parameters
@@ -40,6 +45,7 @@ init =
     { front = Blocked
     , bumper = BumperUnpressed
     , claw = ClawOpen
+    , wheels = { left = 0, right = 0 }
     , curvature = Curvature.init
     , travelDirection = Nothing
     , lightCalibration = LightCalibration.init
@@ -68,10 +74,14 @@ update input state =
 
         lightCalibration =
             LightCalibration.update input.lightSensor state.lightCalibration
+
+        wheels =
+            { left = input.leftMotor, right = input.rightMotor }
     in
     { state
         | front = front
         , bumper = bumper
-        , curvature = state.curvature |> Curvature.update { left = input.leftMotor, right = input.rightMotor }
+        , wheels = wheels
+        , curvature = state.curvature |> Curvature.update wheels
         , lightCalibration = lightCalibration
     }

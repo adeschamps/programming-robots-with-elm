@@ -2,14 +2,22 @@ module Sorter exposing (main)
 
 import Action exposing (Action)
 import Curvature
+import Goal exposing (Goal(..))
 import InfluxDB
 import LightCalibration
 import Lights
 import Robot exposing (Input, Output, Robot)
-import State exposing (Bumper(..), Claw(..), Front(..), State, TravelDirection(..))
+import State exposing (Bumper(..), Claw(..), Front(..), State)
 
 
-main : Robot { state : State, goal : Goal }
+type alias Model =
+    { state : State
+    , action : Action
+    , goal : Goal
+    }
+
+
+main : Robot Model
 main =
     Robot.stateful
         { init = init
@@ -19,151 +27,38 @@ main =
         }
 
 
-init : { state : State, goal : Goal }
+init : Model
 init =
     { state = State.init
-    , goal = Initialize
+    , action = Action.Idle
+    , goal = Goal.init
     }
 
 
-type Direction
-    = Left
-    | Right
+output : Model -> Input -> Output
+output { action, state } input =
+    input |> Action.output action state
 
 
-type Goal
-    = Initialize
-    | FollowLine
-    | GrabObject
-    | MoveObject Direction
-    | Sequence (List Action) Goal
-
-
-output : Input -> { goal : Goal, state : State } -> Output
-output input { state, goal } =
-    case goal of
-        Initialize ->
-            stop
-
-        FollowLine ->
-            case state.front of
-                Blocked ->
-                    stop
-
-                Unblocked ->
-                    LightCalibration.corrected state.lightCalibration input.lightSensor
-                        |> followLine
-                        |> (\o -> { o | lights = Just (Curvature.lights state.curvature) })
-
-        GrabObject ->
-            closeClaw
-
-        MoveObject _ ->
-            stop
-
-        Sequence (action :: remainingActions) _ ->
-            Action.output input action
-
-        Sequence [] _ ->
-            error
-
-
-followLine : Float -> Output
-followLine brightness =
-    { leftMotor = brightness
-    , rightMotor = 1.0 - brightness
-    , clawMotor = 0.0
-    , lights = Nothing
-    }
-
-
-closeClaw : Output
-closeClaw =
-    { leftMotor = 0.0
-    , rightMotor = 0.0
-    , clawMotor = 1.0
-    , lights = Nothing
-    }
-
-
-stop : Output
-stop =
-    { leftMotor = 0.0
-    , rightMotor = 0.0
-    , clawMotor = 0.0
-    , lights = Just { left = Lights.green, right = Lights.green }
-    }
-
-
-error : Output
-error =
-    { leftMotor = 0.0
-    , rightMotor = 0.0
-    , clawMotor = 0.0
-    , lights = Just { left = Lights.red, right = Lights.red }
-    }
-
-
-update : Input -> { state : State, goal : Goal } -> { state : State, goal : Goal }
-update input { state, goal } =
+update : Input -> Model -> Model
+update input { state, goal, action } =
     let
         -- Perception
         newState =
             State.update input state
 
+        -- Control "self awareness"
+        newAction =
+            Action.update newState action
+
         -- Behaviour
-        newGoal =
-            updateGoal newState goal
+        ( newGoal, maybeAction ) =
+            Goal.update newState newAction goal
     in
-    { state = newState, goal = newGoal }
-
-
-updateGoal : State -> Goal -> Goal
-updateGoal state goal =
-    case goal of
-        Initialize ->
-            FollowLine
-
-        FollowLine ->
-            case ( state.claw, state.bumper, state.travelDirection ) of
-                ( ClawOpen, BumperPressed, _ ) ->
-                    GrabObject
-
-                ( ClawClosed, _, Just travelDirection ) ->
-                    MoveObject <| depositSide travelDirection
-
-                _ ->
-                    goal
-
-        GrabObject ->
-            if state.claw == ClawClosed then
-                FollowLine
-
-            else
-                goal
-
-        MoveObject direction ->
-            let
-                actions =
-                    []
-            in
-            Sequence actions FollowLine
-
-        Sequence [] nextGoal ->
-            nextGoal
-
-        Sequence (action :: remaining) _ ->
-            goal
-
-
-depositSide : TravelDirection -> Direction
-depositSide travel =
-    case travel of
-        Clockwise ->
-            Left
-
-        CounterClockwise ->
-            Right
+    { state = newState
+    , goal = newGoal
+    , action = maybeAction |> Maybe.withDefault newAction
+    }
 
 
 metrics : Input -> { a | state : State } -> List InfluxDB.Datum
