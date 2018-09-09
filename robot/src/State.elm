@@ -1,5 +1,6 @@
-module State exposing (Bumper(..), Claw(..), Front(..), State, TravelDirection(..), init, update)
+module State exposing (Bumper(..), Front(..), State, TravelDirection(..), init, update)
 
+import Claw
 import Curvature
 import LightCalibration
 import Robot exposing (Input)
@@ -8,11 +9,6 @@ import Robot exposing (Input)
 type TravelDirection
     = Clockwise
     | CounterClockwise
-
-
-type Claw
-    = ClawOpen
-    | ClawClosed
 
 
 type Bumper
@@ -32,7 +28,7 @@ type alias WheelOdometers =
 type alias State =
     { front : Front
     , bumper : Bumper
-    , claw : Claw
+    , claw : Claw.State
     , wheels : WheelOdometers
     , curvature : Curvature.State
     , travelDirection : Maybe TravelDirection
@@ -44,7 +40,7 @@ init : State
 init =
     { front = Blocked
     , bumper = BumperUnpressed
-    , claw = ClawOpen
+    , claw = Claw.init
     , wheels = { left = 0, right = 0 }
     , curvature = Curvature.init
     , travelDirection = Nothing
@@ -81,6 +77,7 @@ update input state =
     { state
         | front = front
         , bumper = bumper
+        , claw = state.claw |> Claw.update { clawPosition = input.clawMotor, time = input.time }
         , wheels = wheels
         , curvature = state.curvature |> Curvature.update wheels
         , lightCalibration = lightCalibration

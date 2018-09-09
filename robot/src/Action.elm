@@ -1,9 +1,10 @@
 module Action exposing (Action(..), output, update)
 
+import Claw
 import LightCalibration
 import Lights
 import Robot exposing (Input, Output)
-import State exposing (Claw(..), State)
+import State exposing (State)
 
 
 type Action
@@ -22,14 +23,14 @@ update state action =
             action
 
         Grab ->
-            if state.claw == ClawClosed then
+            if state.claw.claw == Claw.Closed then
                 Idle
 
             else
                 action
 
         Release ->
-            if state.claw == ClawOpen then
+            if state.claw.claw == Claw.Open then
                 Idle
 
             else

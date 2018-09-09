@@ -2,12 +2,10 @@ module Sorter exposing (main)
 
 import Action exposing (Action)
 import Curvature
-import Goal exposing (Goal(..))
+import Goal exposing (Goal)
 import InfluxDB
-import LightCalibration
-import Lights
 import Robot exposing (Input, Output, Robot)
-import State exposing (Bumper(..), Claw(..), Front(..), State)
+import State exposing (State)
 
 
 type alias Model =

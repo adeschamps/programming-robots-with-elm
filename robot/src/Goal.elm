@@ -1,7 +1,8 @@
 module Goal exposing (Goal(..), init, update)
 
 import Action exposing (Action)
-import State exposing (Bumper(..), Claw(..), State)
+import Claw
+import State exposing (Bumper(..), State)
 
 
 type Goal
@@ -27,14 +28,14 @@ update state currentAction goal =
             findObject
 
         FindingObject ->
-            case ( state.claw, state.bumper, state.travelDirection ) of
-                ( ClawOpen, BumperPressed, _ ) ->
+            case ( state.claw.claw, state.bumper, state.travelDirection ) of
+                ( Claw.Open, BumperPressed, _ ) ->
                     ( goal, Just Action.Grab )
 
-                ( ClawClosed, _, Just travelDirection ) ->
+                ( Claw.Closed, _, Just travelDirection ) ->
                     removeObject travelDirection
 
-                ( ClawClosed, _, _ ) ->
+                ( Claw.Closed, _, _ ) ->
                     if currentAction == Action.Idle then
                         ( goal, Just Action.FollowLine )
 
