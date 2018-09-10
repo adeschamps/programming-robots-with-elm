@@ -11,11 +11,6 @@ type Goal
     | RemovingObject (List Action)
 
 
-type Direction
-    = Left
-    | Right
-
-
 init : Goal
 init =
     Initializing { openedClaw = False, closedClaw = False }

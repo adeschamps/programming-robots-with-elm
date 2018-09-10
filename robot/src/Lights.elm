@@ -3,7 +3,7 @@ module Lights exposing (green, off, orange, red)
 {-| The EV3 brick has two LEDs on it. Each LED has a red and a green channel.
 -}
 
-import Robot exposing (BrickLights, LedColor)
+import Robot exposing (LedColor)
 
 
 red : LedColor

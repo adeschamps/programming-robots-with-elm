@@ -1,4 +1,4 @@
-module Sorter exposing (main)
+module Main exposing (main)
 
 import Action exposing (Action)
 import Curvature
@@ -63,7 +63,7 @@ metrics : Input -> { a | state : State } -> List InfluxDB.Datum
 metrics input { state } =
     let
         boolToFloat b =
-            if True then
+            if b then
                 1.0
 
             else

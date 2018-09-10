@@ -49,6 +49,6 @@ const flags = {
   influxPeriod : 1000
 };
 console.log(flags);
-var app = Elm.Sorter.worker(flags);
+var app = Elm.Main.worker(flags);
 app.ports.outputs.subscribe(handleOutputs);
 setInterval(updateInput, 25);

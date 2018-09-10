@@ -22,7 +22,9 @@ type Front
 
 
 type alias WheelOdometers =
-    { left : Int, right : Int }
+    { left : Int
+    , right : Int
+    }
 
 
 type alias State =

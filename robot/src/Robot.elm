@@ -2,7 +2,6 @@ port module Robot exposing (BrickLights, Config, Input, LedColor, Output, Robot,
 
 import Http
 import InfluxDB
-import Json.Decode as D
 import Time
 
 
@@ -32,11 +31,15 @@ type alias Output =
 
 
 type alias BrickLights =
-    { left : LedColor, right : LedColor }
+    { left : LedColor
+    , right : LedColor
+    }
 
 
 type alias LedColor =
-    { red : Float, green : Float }
+    { red : Float
+    , green : Float
+    }
 
 
 type Msg
