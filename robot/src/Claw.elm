@@ -1,40 +1,61 @@
-module Claw exposing (Claw(..), State, init, update)
+module Claw exposing (Claw(..), State, init, position, update)
 
 
 type Claw
     = Uninitialized
     | Open
     | Closed
-    | Opening { since : Int }
-    | Closing { since : Int }
 
 
-type alias State =
-    { claw : Claw
-    , previous : Maybe Int
-    }
+type State
+    = State
+        { position : Claw
+        , min : Maybe Int
+        , max : Maybe Int
+        }
 
 
 init : State
 init =
-    { claw = Uninitialized
-    , previous = Nothing
-    }
+    State
+        { position = Open
+        , min = Nothing
+        , max = Nothing
+        }
 
 
-update : { a | clawPosition : Int, time : Int } -> State -> State
-update { clawPosition } state =
+position : State -> Claw
+position (State { position }) =
+    position
+
+
+update : Int -> State -> State
+update motorPosition (State state) =
     let
-        previous =
-            state.previous |> Maybe.withDefault clawPosition
+        min_ =
+            state.min |> Maybe.withDefault motorPosition |> min motorPosition
+
+        max_ =
+            state.max |> Maybe.withDefault motorPosition |> max motorPosition
 
         delta =
-            clawPosition - previous
+            max_ - min_
 
-        claw =
-            state.claw
+        midpoint =
+            min_ + (max_ - min_) // 2
+
+        position =
+            if delta < 70 then
+                Uninitialized
+
+            else if motorPosition > midpoint then
+                Open
+
+            else
+                Closed
     in
-    { state
-        | claw = claw
-        , previous = Just clawPosition
-    }
+    State
+        { position = position
+        , min = Just min_
+        , max = Just max_
+        }

@@ -26,9 +26,10 @@ type alias WheelOdometers =
 
 
 type alias State =
-    { front : Front
-    , bumper : Bumper
+    { time : Int
     , claw : Claw.State
+    , front : Front
+    , bumper : Bumper
     , wheels : WheelOdometers
     , curvature : Curvature.State
     , travelDirection : Maybe TravelDirection
@@ -38,9 +39,10 @@ type alias State =
 
 init : State
 init =
-    { front = Blocked
-    , bumper = BumperUnpressed
+    { time = 0
     , claw = Claw.init
+    , front = Blocked
+    , bumper = BumperUnpressed
     , wheels = { left = 0, right = 0 }
     , curvature = Curvature.init
     , travelDirection = Nothing
@@ -51,6 +53,9 @@ init =
 update : Input -> State -> State
 update input state =
     let
+        claw =
+            Claw.update input.clawMotor state.claw
+
         front =
             if state.front == Unblocked && input.distanceSensor < 45 then
                 Blocked
@@ -75,9 +80,10 @@ update input state =
             { left = input.leftMotor, right = input.rightMotor }
     in
     { state
-        | front = front
+        | time = input.time
+        , claw = claw
+        , front = front
         , bumper = bumper
-        , claw = state.claw |> Claw.update { clawPosition = input.clawMotor, time = input.time }
         , wheels = wheels
         , curvature = state.curvature |> Curvature.update wheels
         , lightCalibration = lightCalibration

@@ -28,7 +28,7 @@ main =
 init : Model
 init =
     { state = State.init
-    , action = Action.Idle
+    , action = Action.idle
     , goal = Goal.init
     }
 
@@ -45,7 +45,7 @@ update input { state, goal, action } =
         newState =
             State.update input state
 
-        -- Control "self awareness"
+        -- Control
         newAction =
             Action.update newState action
 

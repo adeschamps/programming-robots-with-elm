@@ -6,7 +6,7 @@ import State exposing (Bumper(..), State)
 
 
 type Goal
-    = Initializing
+    = Initializing { openedClaw : Bool, closedClaw : Bool }
     | FindingObject
     | RemovingObject (List Action)
 
@@ -18,26 +18,39 @@ type Direction
 
 init : Goal
 init =
-    Initializing
+    Initializing { openedClaw = False, closedClaw = False }
 
 
 update : State -> Action -> Goal -> ( Goal, Maybe Action )
 update state currentAction goal =
     case goal of
-        Initializing ->
-            findObject
+        Initializing context ->
+            -- Before we begin, we open and close the claw so that the
+            -- State module can determine its extreme positions.
+            if Action.isIdle currentAction then
+                if not context.openedClaw then
+                    ( Initializing { context | openedClaw = True }, Just Action.release )
+
+                else if not context.closedClaw then
+                    ( Initializing { context | closedClaw = True }, Just Action.grab )
+
+                else
+                    findObject
+
+            else
+                ( goal, Nothing )
 
         FindingObject ->
-            case ( state.claw.claw, state.bumper, state.travelDirection ) of
+            case ( Claw.position state.claw, state.bumper, state.travelDirection ) of
                 ( Claw.Open, BumperPressed, _ ) ->
-                    ( goal, Just Action.Grab )
+                    ( goal, Just Action.grab )
 
                 ( Claw.Closed, _, Just travelDirection ) ->
                     removeObject travelDirection
 
                 ( Claw.Closed, _, _ ) ->
-                    if currentAction == Action.Idle then
-                        ( goal, Just Action.FollowLine )
+                    if Action.isIdle currentAction then
+                        ( goal, Just Action.followLine )
 
                     else
                         ( goal, Nothing )
@@ -46,11 +59,11 @@ update state currentAction goal =
                     ( goal, Nothing )
 
         RemovingObject actions ->
-            case ( currentAction, actions ) of
-                ( Action.Idle, nextAction :: remainingActions ) ->
+            case ( Action.isIdle currentAction, actions ) of
+                ( True, nextAction :: remainingActions ) ->
                     ( RemovingObject remainingActions, Just nextAction )
 
-                ( Action.Idle, [] ) ->
+                ( True, [] ) ->
                     findObject
 
                 _ ->
@@ -59,22 +72,22 @@ update state currentAction goal =
 
 findObject : ( Goal, Maybe Action )
 findObject =
-    ( FindingObject, Just Action.FollowLine )
+    ( FindingObject, Just Action.followLine )
 
 
 removeObject : State.TravelDirection -> ( Goal, Maybe Action )
 removeObject direction =
-    ( RemovingObject (removeActions direction), Just Action.Idle )
+    ( RemovingObject (removeActions direction), Just Action.idle )
 
 
 removeActions : State.TravelDirection -> List Action
 removeActions direction =
     let
         turnLeft =
-            Action.MoveBy { leftDelta = -1, rightDelta = 1 }
+            Action.moveBy { leftDelta = -1, rightDelta = 1 }
 
         turnRight =
-            Action.MoveBy { leftDelta = 1, rightDelta = -1 }
+            Action.moveBy { leftDelta = 1, rightDelta = -1 }
 
         ( turn, turnBack ) =
             case direction of
@@ -85,13 +98,13 @@ removeActions direction =
                     ( turnRight, turnLeft )
 
         forward =
-            Action.MoveBy { leftDelta = 1, rightDelta = 1 }
+            Action.moveBy { leftDelta = 1, rightDelta = 1 }
 
         reverse =
-            Action.MoveBy { leftDelta = -1, rightDelta = -1 }
+            Action.moveBy { leftDelta = -1, rightDelta = -1 }
 
         release =
-            Action.Release
+            Action.release
     in
     [ turn
     , forward

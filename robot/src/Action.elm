@@ -1,6 +1,5 @@
-module Action exposing (Action(..), output, update)
+module Action exposing (Action, followLine, grab, idle, isIdle, moveBy, output, release, update)
 
-import Claw
 import LightCalibration
 import Lights
 import Robot exposing (Input, Output)
@@ -9,11 +8,73 @@ import State exposing (State)
 
 type Action
     = Idle
-    | Grab
-    | Release
+    | Grab Timer
+    | Release Timer
     | FollowLine
     | MoveTo { left : Int, right : Int }
     | MoveBy { leftDelta : Int, rightDelta : Int }
+
+
+type Timer
+    = Starting
+    | Since Int
+
+
+
+-- CONSTRUCTORS
+
+
+idle : Action
+idle =
+    Idle
+
+
+grab : Action
+grab =
+    Grab Starting
+
+
+release : Action
+release =
+    Release Starting
+
+
+followLine : Action
+followLine =
+    FollowLine
+
+
+moveBy : { leftDelta : Int, rightDelta : Int } -> Action
+moveBy params =
+    MoveBy params
+
+
+
+-- INSPECTION
+
+
+isIdle : Action -> Bool
+isIdle action =
+    case action of
+        Idle ->
+            True
+
+        _ ->
+            False
+
+
+
+-- UPDATE AND OUTPUTS
+
+
+grabDuration : Int
+grabDuration =
+    2000
+
+
+releaseDuration : Int
+releaseDuration =
+    2000
 
 
 update : State -> Action -> Action
@@ -22,15 +83,21 @@ update state action =
         Idle ->
             action
 
-        Grab ->
-            if state.claw.claw == Claw.Closed then
+        Grab Starting ->
+            Grab (Since state.time)
+
+        Grab (Since startTime) ->
+            if state.time - startTime > grabDuration then
                 Idle
 
             else
                 action
 
-        Release ->
-            if state.claw.claw == Claw.Open then
+        Release Starting ->
+            Release (Since state.time)
+
+        Release (Since startTime) ->
+            if state.time - startTime > releaseDuration then
                 Idle
 
             else
@@ -60,14 +127,14 @@ output action state input =
             , lights = Nothing
             }
 
-        Grab ->
+        Grab _ ->
             { leftMotor = 0.0
             , rightMotor = 0.0
             , clawMotor = 1.0
             , lights = Nothing
             }
 
-        Release ->
+        Release _ ->
             { leftMotor = 0.0
             , rightMotor = 0.0
             , clawMotor = 1.0
@@ -75,7 +142,15 @@ output action state input =
             }
 
         FollowLine ->
-            followLine <| LightCalibration.corrected state.lightCalibration input.lightSensor
+            let
+                brightness =
+                    LightCalibration.corrected state.lightCalibration input.lightSensor
+            in
+            { leftMotor = brightness
+            , rightMotor = 1.0 - brightness
+            , clawMotor = 0.0
+            , lights = Nothing
+            }
 
         MoveTo { left, right } ->
             { leftMotor = speed (left - input.leftMotor)
@@ -88,13 +163,8 @@ output action state input =
             output Idle state input
 
 
-followLine : Float -> Output
-followLine brightness =
-    { leftMotor = brightness
-    , rightMotor = 1.0 - brightness
-    , clawMotor = 0.0
-    , lights = Nothing
-    }
+
+-- HELPERS
 
 
 speed : Int -> Float
