@@ -79,11 +79,14 @@ update input state =
         wheels =
             { left = input.leftMotor, right = input.rightMotor }
 
+        curvature =
+            Curvature.update wheels state.curvature
+
         -- Travel direction is reset if the curvature becomes
         -- unknown. If we are going straight, then we maintain the
         -- last known curvature.
         travelDirection =
-            case Curvature.curve state.curvature of
+            case Curvature.curve curvature of
                 Curvature.Unknown ->
                     Nothing
 
@@ -96,13 +99,12 @@ update input state =
                 Curvature.Right ->
                     Just Clockwise
     in
-    { state
-        | time = input.time
-        , claw = claw
-        , front = front
-        , bumper = bumper
-        , wheels = wheels
-        , curvature = state.curvature |> Curvature.update wheels
-        , lightCalibration = lightCalibration
-        , travelDirection = travelDirection
+    { time = input.time
+    , claw = claw
+    , front = front
+    , bumper = bumper
+    , wheels = wheels
+    , curvature = curvature
+    , lightCalibration = lightCalibration
+    , travelDirection = travelDirection
     }
