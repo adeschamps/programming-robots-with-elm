@@ -6,7 +6,8 @@ import Robot exposing (BrickLights)
 
 
 type Curve
-    = Straight
+    = Unknown
+    | Straight
     | Left
     | Right
 
@@ -94,7 +95,7 @@ update current (State state) =
             state.average_2_0 * (1 - alpha) + instant * alpha
 
         curve =
-            calculateCurve average_1_0 state.curve
+            calculateCurve average_1_0 state.curve |> resetIfExtreme average_0_5
     in
     State
         { previous = Just current
@@ -109,6 +110,13 @@ update current (State state) =
 calculateCurve : Float -> Curve -> Curve
 calculateCurve curvature current =
     case current of
+        Unknown ->
+            if curvature > -0.2 || curvature < 0.2 then
+                Straight
+
+            else
+                current
+
         Left ->
             if curvature > -0.2 then
                 Straight
@@ -134,6 +142,15 @@ calculateCurve curvature current =
                 current
 
 
+resetIfExtreme : Float -> Curve -> Curve
+resetIfExtreme curvature current =
+    if curvature < -0.7 || curvature > 0.7 then
+        Unknown
+
+    else
+        current
+
+
 metrics : State -> Maybe Int -> List InfluxDB.Datum
 metrics (State state) time =
     [ InfluxDB.Datum "curve" [ ( "window", "instant" ) ] state.instant time
@@ -150,6 +167,9 @@ are looking at the front of the robot.
 lights : State -> BrickLights
 lights (State { curve }) =
     case curve of
+        Unknown ->
+            { left = Lights.red, right = Lights.red }
+
         Left ->
             { left = Lights.off, right = Lights.green }
 
