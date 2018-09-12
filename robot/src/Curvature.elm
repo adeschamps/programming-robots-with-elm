@@ -153,10 +153,26 @@ resetIfExtreme curvature current =
 
 metrics : State -> Maybe Int -> List InfluxDB.Datum
 metrics (State state) time =
+    let
+        category =
+            case state.curve of
+                Unknown ->
+                    "unknown"
+
+                Left ->
+                    "left"
+
+                Straight ->
+                    "straight"
+
+                Right ->
+                    "right"
+    in
     [ InfluxDB.Datum "curve" [ ( "window", "instant" ) ] state.instant time
     , InfluxDB.Datum "curve" [ ( "window", "0_5_turns" ) ] state.average_0_5 time
     , InfluxDB.Datum "curve" [ ( "window", "1_0_turns" ) ] state.average_1_0 time
     , InfluxDB.Datum "curve" [ ( "window", "2_0_turns" ) ] state.average_2_0 time
+    , InfluxDB.Datum "curve_category" [ ( "category", category ) ] 1 time
     ]
 
 

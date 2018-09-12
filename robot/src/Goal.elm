@@ -1,7 +1,8 @@
-module Goal exposing (Goal(..), init, update)
+module Goal exposing (Goal(..), init, metrics, update)
 
 import Action exposing (Action)
 import Claw
+import InfluxDB
 import State exposing (Bumper(..), State)
 
 
@@ -106,4 +107,22 @@ removeActions direction =
     , release
     , reverse
     , turnBack
+    ]
+
+
+metrics : Goal -> Maybe Int -> List InfluxDB.Datum
+metrics goal time =
+    let
+        goalString =
+            case goal of
+                Initializing _ ->
+                    "initializing"
+
+                FindingObject ->
+                    "finding"
+
+                RemovingObject _ ->
+                    "removing"
+    in
+    [ InfluxDB.Datum "goal" [ ( "variant", goalString ) ] 1 time
     ]

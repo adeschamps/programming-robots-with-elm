@@ -59,8 +59,8 @@ update input { state, goal, action } =
     }
 
 
-metrics : Input -> { a | state : State } -> List InfluxDB.Datum
-metrics input { state } =
+metrics : Input -> Model -> List InfluxDB.Datum
+metrics input { state, goal } =
     let
         boolToFloat b =
             if b then
@@ -77,3 +77,5 @@ metrics input { state } =
     , InfluxDB.Datum "sensor" [ ( "type", "touch" ) ] (boolToFloat input.touchSensor) time
     ]
         ++ Curvature.metrics state.curvature time
+        ++ State.metrics state time
+        ++ Goal.metrics goal time

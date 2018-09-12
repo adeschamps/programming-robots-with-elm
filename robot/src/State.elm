@@ -1,7 +1,8 @@
-module State exposing (Bumper(..), Front(..), State, TravelDirection(..), init, update)
+module State exposing (Bumper(..), Front(..), State, TravelDirection(..), init, metrics, update)
 
 import Claw
 import Curvature
+import InfluxDB
 import LightCalibration
 import Robot exposing (Input)
 
@@ -110,3 +111,9 @@ update input state =
     , lightCalibration = lightCalibration
     , travelDirection = travelDirection
     }
+
+
+metrics : State -> Maybe Int -> List InfluxDB.Datum
+metrics state time =
+    Claw.metrics state.claw time
+        ++ Curvature.metrics state.curvature time
