@@ -23,11 +23,11 @@ update state currentAction goal =
             -- Before we begin, we open and close the claw so that the
             -- State module can determine its extreme positions.
             if Action.isIdle currentAction then
-                if not context.openedClaw then
-                    ( Initializing { context | openedClaw = True }, Just Action.release )
-
-                else if not context.closedClaw then
+                if not context.closedClaw then
                     ( Initializing { context | closedClaw = True }, Just Action.grab )
+
+                else if not context.openedClaw then
+                    ( Initializing { context | openedClaw = True }, Just Action.release )
 
                 else
                     findObject
@@ -79,10 +79,10 @@ removeActions : State.TravelDirection -> List Action
 removeActions direction =
     let
         turnLeft =
-            Action.moveBy { leftDelta = -1, rightDelta = 1 }
+            Action.moveBy { leftDelta = -180, rightDelta = 180 }
 
         turnRight =
-            Action.moveBy { leftDelta = 1, rightDelta = -1 }
+            Action.moveBy { leftDelta = 180, rightDelta = -180 }
 
         ( turn, turnBack ) =
             case direction of
@@ -93,10 +93,10 @@ removeActions direction =
                     ( turnRight, turnLeft )
 
         forward =
-            Action.moveBy { leftDelta = 1, rightDelta = 1 }
+            Action.moveBy { leftDelta = 360, rightDelta = 360 }
 
         reverse =
-            Action.moveBy { leftDelta = -1, rightDelta = -1 }
+            Action.moveBy { leftDelta = -360, rightDelta = -360 }
 
         release =
             Action.release

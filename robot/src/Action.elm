@@ -130,7 +130,7 @@ output action state input =
         Grab _ ->
             { leftMotor = 0.0
             , rightMotor = 0.0
-            , clawMotor = 1.0
+            , clawMotor = -1.0
             , lights = Nothing
             }
 
@@ -169,14 +169,11 @@ output action state input =
 
 speed : Int -> Float
 speed delta =
-    if delta > 1 then
-        -1.0
-
-    else if delta < 1 then
-        1.0
-
-    else
-        0.0
+    delta
+        |> toFloat
+        |> (*) 0.01
+        |> max -1.0
+        |> min 1.0
 
 
 within : Int -> Int -> Int -> Bool

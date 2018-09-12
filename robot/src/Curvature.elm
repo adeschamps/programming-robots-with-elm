@@ -111,7 +111,7 @@ calculateCurve : Float -> Curve -> Curve
 calculateCurve curvature current =
     case current of
         Unknown ->
-            if curvature > -0.2 || curvature < 0.2 then
+            if curvature > -0.2 && curvature < 0.2 then
                 Straight
 
             else

@@ -41,18 +41,27 @@ update motorPosition (State state) =
         delta =
             max_ - min_
 
-        midpoint =
-            min_ + (max_ - min_) // 2
+        quarterDelta =
+            delta // 4
+
+        closedThreshold =
+            min_ + 1 * quarterDelta
+
+        openThreshold =
+            min_ + 3 * quarterDelta
 
         position =
             if delta < 70 then
                 Uninitialized
 
-            else if motorPosition > midpoint then
+            else if motorPosition > openThreshold then
                 Open
 
-            else
+            else if motorPosition < closedThreshold then
                 Closed
+
+            else
+                state.position
     in
     State
         { position = position

@@ -6,23 +6,27 @@ global.XMLHttpRequest = require("xhr2");
 
 const rightMotor = new ev3.Motor(ev3.OUTPUT_B);
 const leftMotor = new ev3.Motor(ev3.OUTPUT_C);
+const clawMotor = new ev3.Motor(ev3.OUTPUT_A);
 const lightSensor = new ev3.LightSensor();
 const distanceSensor = new ev3.UltrasonicSensor();
 const touchSensor = new ev3.TouchSensor();
 
-// This constant is used to map speeds in the range [-1.0, 1.0] to actual outputs.
+// This constant is used to map speeds in the range [-1.0, 1.0] to actual
+// outputs.
 const SPEED = 100;
 
 process.on("SIGINT", function() {
   console.log("Stopping...");
   leftMotor.start(0);
   rightMotor.start(0);
+  clawMotor.start(0);
   process.exit(0);
 });
 
 function handleOutputs(outputs) {
   leftMotor.start(Math.round(SPEED * outputs.leftMotor));
   rightMotor.start(Math.round(SPEED * outputs.rightMotor));
+  clawMotor.start(Math.round(SPEED * outputs.clawMotor));
   // Handling lights seems to introduce a very long delay in the update loop.
   // const lights = outputs.lights;
   // if (lights) {
@@ -38,7 +42,7 @@ function updateInput() {
     touchSensor : touchSensor.isPressed,
     leftMotor : leftMotor.position,
     rightMotor : rightMotor.position,
-    clawMotor : 0,
+    clawMotor : clawMotor.position,
     time : Date.now(),
   };
   app.ports.inputs.send(inputs);
