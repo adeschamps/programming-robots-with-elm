@@ -14,24 +14,22 @@ init =
     }
 
 
+{-| I was experimenting with making the light sensor auto-calibrate
+itself, but it turns out these hard coded parameters work pretty even
+under vairous light conditions.
+-}
 update : Float -> Parameters -> Parameters
 update raw { high, low } =
-    { high = max high (raw - 20)
-    , low = min low (raw + 20)
+    -- { high = max high (raw - 10)
+    -- , low = min low (raw + 10)
+    -- }
+    { high = 60
+    , low = 30
     }
 
 
 corrected : Parameters -> Float -> Float
 corrected { high, low } raw =
-    if raw >= high then
-        1.0
-
-    else if raw <= low then
-        0.0
-
-    else
-        0.5
-
-
-
--- (raw - low) / (high - low)
+    ((raw - low) / (high - low))
+        |> max 0.0
+        |> min 1.0
