@@ -16,12 +16,12 @@ wonder: is Elm a delightful language for other applications as well?
 
 I'm Anthony Deschamps. I like robots. Here are my credentials:
 
-> Slide: photo from RoboFest when I was 11
+> Slide: photo from RoboFest when I was 12
 
 ## LEGO Robotics
 
 When I was 9 years old I got a LEGO robotics kit for my birthday. It
-wouldn't be an understatemet to say that this was one of the most
+wouldn't be an understatement to say that this was one of the most
 influential moments on my life.
 
 <!-- Quick overview of the EV3, sensors, motors, and ev3dev -->
@@ -521,6 +521,9 @@ moment there's no line to follow.
 >     | MoveObject
 > ```
 
+> NOTE: Encoding sequential behaviours in a functional language can
+> actually be a bit awkward until you crack it.
+
 
 ## Control
 
@@ -682,9 +685,9 @@ approach that resonates with you, go and explore!
 
 ## Wrapping up
 
-I'd like to thank Matt Griffith for mentoring me through my first
-conference talk, as well as Mike Onslow and the rest of the Elm
-Detroit Meetup group for their helpful feedback.
+And with that said, I'd like to thank Matt Griffith for mentoring me
+through my first conference talk, as well as Mike Onslow and the rest
+of the Elm Detroit Meetup group for their helpful feedback.
 
 My slides are available online. You can reach me on Slack or by email,
 and I'd love to talk to you. Thank you!
