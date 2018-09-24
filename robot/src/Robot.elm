@@ -68,7 +68,7 @@ type alias Robot state =
 type alias Config state =
     { init : state
     , update : Input -> state -> state
-    , output : state -> Input -> Output
+    , output : state -> Output
     , generateMetrics : Maybe (Input -> state -> List InfluxDB.Datum)
     }
 
@@ -105,7 +105,7 @@ update config msg model =
                     config.update input model.state
 
                 output =
-                    config.output newState input
+                    config.output newState
 
                 metrics =
                     case config.generateMetrics of

@@ -33,9 +33,9 @@ init =
     }
 
 
-output : Model -> Input -> Output
-output { perception, control } input =
-    input |> Control.output control perception
+output : Model -> Output
+output { perception, control } =
+    Control.output control perception
 
 
 update : Input -> Model -> Model

@@ -37,6 +37,7 @@ type alias Perception =
     , curvature : Curvature.State
     , travelDirection : Maybe TravelDirection
     , lightCalibration : LightCalibration.Parameters
+    , lightSensor : Float
     }
 
 
@@ -50,6 +51,7 @@ init =
     , curvature = Curvature.init
     , travelDirection = Nothing
     , lightCalibration = LightCalibration.init
+    , lightSensor = 0.0
     }
 
 
@@ -78,6 +80,9 @@ update input perception =
 
         lightCalibration =
             LightCalibration.update input.lightSensor perception.lightCalibration
+
+        lightSensor =
+            LightCalibration.corrected lightCalibration input.lightSensor
 
         wheels =
             { left = input.leftMotor, right = input.rightMotor }
@@ -109,6 +114,7 @@ update input perception =
     , wheels = wheels
     , curvature = curvature
     , lightCalibration = lightCalibration
+    , lightSensor = lightSensor
     , travelDirection = travelDirection
     }
 

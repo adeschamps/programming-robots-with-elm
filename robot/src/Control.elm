@@ -120,8 +120,8 @@ update perception control =
                 control
 
 
-output : Control -> Perception -> Input -> Output
-output control perception input =
+output : Control -> Perception -> Output
+output control perception =
     case control of
         Idle ->
             { leftMotor = 0.0
@@ -145,25 +145,21 @@ output control perception input =
             }
 
         FollowLine ->
-            let
-                brightness =
-                    LightCalibration.corrected perception.lightCalibration input.lightSensor
-            in
-            { leftMotor = brightness
-            , rightMotor = 1.0 - brightness
+            { leftMotor = perception.lightSensor
+            , rightMotor = 1.0 - perception.lightSensor
             , clawMotor = 0.0
             , lights = Nothing
             }
 
         MoveTo { left, right } ->
-            { leftMotor = speed (left - input.leftMotor)
-            , rightMotor = speed (right - input.rightMotor)
+            { leftMotor = speed (left - perception.wheels.left)
+            , rightMotor = speed (right - perception.wheels.right)
             , clawMotor = 0.0
             , lights = Nothing
             }
 
         MoveBy _ ->
-            output Idle perception input
+            output Idle perception
 
 
 
