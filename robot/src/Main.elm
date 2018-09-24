@@ -19,8 +19,8 @@ main : Robot Model
 main =
     Robot.program
         { init = init
-        , output = output
         , update = update
+        , output = output
         , generateMetrics = Just metrics
         }
 
@@ -34,7 +34,7 @@ init =
 
 
 output : Model -> Input -> Output
-output { control, perception } input =
+output { perception, control } input =
     input |> Control.output control perception
 
 

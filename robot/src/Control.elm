@@ -107,7 +107,10 @@ update perception control =
             control
 
         MoveBy { leftDelta, rightDelta } ->
-            MoveTo { left = perception.wheels.left + leftDelta, right = perception.wheels.right + rightDelta }
+            MoveTo
+                { left = perception.wheels.left + leftDelta
+                , right = perception.wheels.right + rightDelta
+                }
 
         MoveTo { left, right } ->
             if within 5 left perception.wheels.left && within 5 right perception.wheels.right then

@@ -16,7 +16,7 @@ type State
     = State
         { previous : Maybe Inputs
         , curve : Curve
-        , instant : Float
+        , raw : Float
         , average_0_5 : Float
         , average_1_0 : Float
         , average_2_0 : Float
@@ -34,7 +34,7 @@ init =
     State
         { previous = Nothing
         , curve = Straight
-        , instant = 0.0
+        , raw = 0.0
         , average_0_5 = 0.0
         , average_1_0 = 0.0
         , average_2_0 = 0.0
@@ -66,7 +66,7 @@ update current (State state) =
         totalTravel =
             deltaLeft + deltaRight
 
-        instant =
+        raw =
             if totalTravel > 0 then
                 delta / totalTravel
 
@@ -78,21 +78,21 @@ update current (State state) =
                 alpha =
                     1.0 - e ^ (-totalTravel / 0.5)
             in
-            state.average_0_5 * (1 - alpha) + instant * alpha
+            state.average_0_5 * (1 - alpha) + raw * alpha
 
         average_1_0 =
             let
                 alpha =
                     1.0 - e ^ (-totalTravel / 1.0)
             in
-            state.average_1_0 * (1 - alpha) + instant * alpha
+            state.average_1_0 * (1 - alpha) + raw * alpha
 
         average_2_0 =
             let
                 alpha =
                     1.0 - e ^ (-totalTravel / 2.0)
             in
-            state.average_2_0 * (1 - alpha) + instant * alpha
+            state.average_2_0 * (1 - alpha) + raw * alpha
 
         newCurve =
             calculateCurve average_1_0 state.curve |> resetIfExtreme average_0_5
@@ -100,7 +100,7 @@ update current (State state) =
     State
         { previous = Just current
         , curve = newCurve
-        , instant = instant
+        , raw = raw
         , average_0_5 = average_0_5
         , average_1_0 = average_1_0
         , average_2_0 = average_2_0
@@ -144,7 +144,7 @@ calculateCurve curvature current =
 
 resetIfExtreme : Float -> Curve -> Curve
 resetIfExtreme curvature current =
-    if curvature < -0.7 || curvature > 0.7 then
+    if abs curvature > 0.7 then
         Unknown
 
     else
@@ -168,7 +168,7 @@ metrics (State state) time =
                 Right ->
                     "right"
     in
-    [ InfluxDB.Datum "curve" [ ( "window", "instant" ) ] state.instant time
+    [ InfluxDB.Datum "curve" [ ( "window", "raw" ) ] state.raw time
     , InfluxDB.Datum "curve" [ ( "window", "0_5_turns" ) ] state.average_0_5 time
     , InfluxDB.Datum "curve" [ ( "window", "1_0_turns" ) ] state.average_1_0 time
     , InfluxDB.Datum "curve" [ ( "window", "2_0_turns" ) ] state.average_2_0 time
