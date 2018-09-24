@@ -75,7 +75,7 @@ type alias Config state =
 
 program : Config state -> Robot state
 program config =
-    Platform.programWithFlags
+    Platform.worker
         { init = \flags -> ( { flags = flags, state = config.init, metrics = [] }, Cmd.none )
         , update = update config
         , subscriptions = subscriptions

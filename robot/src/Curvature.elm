@@ -94,12 +94,12 @@ update current (State state) =
             in
             state.average_2_0 * (1 - alpha) + instant * alpha
 
-        curve =
+        newCurve =
             calculateCurve average_1_0 state.curve |> resetIfExtreme average_0_5
     in
     State
         { previous = Just current
-        , curve = curve
+        , curve = newCurve
         , instant = instant
         , average_0_5 = average_0_5
         , average_1_0 = average_1_0
@@ -181,8 +181,8 @@ curvature. Left/right are reversed, since they are labeled as if you
 are looking at the front of the robot.
 -}
 lights : State -> BrickLights
-lights (State { curve }) =
-    case curve of
+lights (State state) =
+    case state.curve of
         Unknown ->
             { left = Lights.red, right = Lights.red }
 

@@ -27,8 +27,8 @@ init =
 
 
 position : State -> Claw
-position (State { position }) =
-    position
+position (State s) =
+    s.position
 
 
 update : Int -> State -> State
@@ -52,7 +52,7 @@ update motorPosition (State state) =
         openThreshold =
             min_ + 3 * quarterDelta
 
-        position =
+        newPosition =
             if delta < 70 then
                 Uninitialized
 
@@ -66,7 +66,7 @@ update motorPosition (State state) =
                 state.position
     in
     State
-        { position = position
+        { position = newPosition
         , min = Just min_
         , max = Just max_
         }

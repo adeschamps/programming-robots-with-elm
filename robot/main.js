@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const Elm = require("./robot.js");
+const Elm = require("./robot.js").Elm;
 const ev3 = require("ev3dev-lang");
 global.XMLHttpRequest = require("xhr2");
 
@@ -53,6 +53,6 @@ const flags = {
   influxPeriod : 1000
 };
 console.log(flags);
-var app = Elm.Main.worker(flags);
+var app = Elm.Main.init({flags : flags});
 app.ports.outputs.subscribe(handleOutputs);
 setInterval(updateInput, 25);
