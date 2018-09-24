@@ -319,7 +319,7 @@ then there would be a fun story to set up this scenario.
 ## Perception
 
 As far as perception goes, we have two new problems on top of
-following the line. The first is that we need to known when we've
+following the line. The first is that we need to know when we've
 encountered an obstacle, and the second is that we need to know which
 side of the line is the outside of the track.
 

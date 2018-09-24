@@ -22,11 +22,11 @@ script.pdf: script.md
 script.docx: script.md
 	pandoc -o $@ $<
 
-slides.html: slides.md
-	pandoc -t revealjs -s -o slides.html slides.md -V revealjs-url=http://lab.hakim.se/reveal-js -V transition=fade
+slides.html: slides.md Makefile
+	pandoc -t revealjs -s -o slides.html slides.md -V revealjs-url=http://lab.hakim.se/reveal-js -V transition=fade --slide-level 2 -i --highlight-style zenburn
 
 slides.pdf: slides.md
 	pandoc -o $@ $< -t beamer
 
 clean: ## Remove generated files
-	rm -rf *.pdf *.docx
+	rm -rf *.pdf *.docx *.html
