@@ -1,23 +1,23 @@
 module Main exposing (main)
 
-import Action exposing (Action)
+import Behaviour exposing (Behaviour)
+import Control exposing (Control)
 import Curvature
-import Goal exposing (Goal)
 import InfluxDB
+import Perception exposing (Perception)
 import Robot exposing (Input, Output, Robot)
-import State exposing (State)
 
 
 type alias Model =
-    { state : State
-    , action : Action
-    , goal : Goal
+    { perception : Perception
+    , behaviour : Behaviour
+    , control : Control
     }
 
 
 main : Robot Model
 main =
-    Robot.stateful
+    Robot.program
         { init = init
         , output = output
         , update = update
@@ -27,40 +27,40 @@ main =
 
 init : Model
 init =
-    { state = State.init
-    , action = Action.idle
-    , goal = Goal.init
+    { perception = Perception.init
+    , behaviour = Behaviour.init
+    , control = Control.idle
     }
 
 
 output : Model -> Input -> Output
-output { action, state } input =
-    input |> Action.output action state
+output { control, perception } input =
+    input |> Control.output control perception
 
 
 update : Input -> Model -> Model
-update input { state, goal, action } =
+update input { perception, behaviour, control } =
     let
         -- Perception
-        newState =
-            State.update input state
+        newPerception =
+            Perception.update input perception
 
         -- Control
-        newAction =
-            Action.update newState action
+        newControl =
+            Control.update newPerception control
 
         -- Behaviour
-        ( newGoal, maybeAction ) =
-            Goal.update newState newAction goal
+        ( newBehaviour, maybeControl ) =
+            Behaviour.update newPerception newControl behaviour
     in
-    { state = newState
-    , goal = newGoal
-    , action = maybeAction |> Maybe.withDefault newAction
+    { perception = newPerception
+    , behaviour = newBehaviour
+    , control = maybeControl |> Maybe.withDefault newControl
     }
 
 
 metrics : Input -> Model -> List InfluxDB.Datum
-metrics input { state, goal } =
+metrics input { perception, behaviour } =
     let
         boolToFloat b =
             if b then
@@ -76,6 +76,6 @@ metrics input { state, goal } =
     , InfluxDB.Datum "sensor" [ ( "type", "distance" ) ] (toFloat input.distanceSensor) time
     , InfluxDB.Datum "sensor" [ ( "type", "touch" ) ] (boolToFloat input.touchSensor) time
     ]
-        ++ Curvature.metrics state.curvature time
-        ++ State.metrics state time
-        ++ Goal.metrics goal time
+        ++ Curvature.metrics perception.curvature time
+        ++ Perception.metrics perception time
+        ++ Behaviour.metrics behaviour time

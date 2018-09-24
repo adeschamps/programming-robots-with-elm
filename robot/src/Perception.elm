@@ -1,4 +1,4 @@
-module State exposing (Bumper(..), Front(..), State, TravelDirection(..), init, metrics, update)
+module Perception exposing (Bumper(..), Front(..), Perception, TravelDirection(..), init, metrics, update)
 
 import Claw
 import Curvature
@@ -28,7 +28,7 @@ type alias WheelOdometers =
     }
 
 
-type alias State =
+type alias Perception =
     { time : Int
     , claw : Claw.State
     , front : Front
@@ -40,7 +40,7 @@ type alias State =
     }
 
 
-init : State
+init : Perception
 init =
     { time = 0
     , claw = Claw.init
@@ -53,21 +53,21 @@ init =
     }
 
 
-update : Input -> State -> State
-update input state =
+update : Input -> Perception -> Perception
+update input perception =
     let
         claw =
-            Claw.update input.clawMotor state.claw
+            Claw.update input.clawMotor perception.claw
 
         front =
-            if state.front == Unblocked && input.distanceSensor < 45 then
+            if perception.front == Unblocked && input.distanceSensor < 45 then
                 Blocked
 
-            else if state.front == Blocked && input.distanceSensor > 55 then
+            else if perception.front == Blocked && input.distanceSensor > 55 then
                 Unblocked
 
             else
-                state.front
+                perception.front
 
         bumper =
             if input.touchSensor then
@@ -77,13 +77,13 @@ update input state =
                 BumperUnpressed
 
         lightCalibration =
-            LightCalibration.update input.lightSensor state.lightCalibration
+            LightCalibration.update input.lightSensor perception.lightCalibration
 
         wheels =
             { left = input.leftMotor, right = input.rightMotor }
 
         curvature =
-            Curvature.update wheels state.curvature
+            Curvature.update wheels perception.curvature
 
         -- Travel direction is reset if the curvature becomes
         -- unknown. If we are going straight, then we maintain the
@@ -94,7 +94,7 @@ update input state =
                     Nothing
 
                 Curvature.Straight ->
-                    state.travelDirection
+                    perception.travelDirection
 
                 Curvature.Left ->
                     Just CounterClockwise
@@ -113,7 +113,7 @@ update input state =
     }
 
 
-metrics : State -> Maybe Int -> List InfluxDB.Datum
-metrics state time =
-    Claw.metrics state.claw time
-        ++ Curvature.metrics state.curvature time
+metrics : Perception -> Maybe Int -> List InfluxDB.Datum
+metrics perception time =
+    Claw.metrics perception.claw time
+        ++ Curvature.metrics perception.curvature time

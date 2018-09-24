@@ -1,4 +1,4 @@
-port module Robot exposing (BrickLights, Config, Input, LedColor, Output, Robot, reactive, stateful)
+port module Robot exposing (BrickLights, Config, Input, LedColor, Output, Robot, program)
 
 import Http
 import InfluxDB
@@ -73,21 +73,11 @@ type alias Config state =
     }
 
 
-reactive : (Input -> Output) -> Robot ()
-reactive output =
-    stateful
-        { init = ()
-        , update = always identity
-        , output = \() input -> output input
-        , generateMetrics = Nothing
-        }
-
-
-stateful : Config state -> Robot state
-stateful robot =
+program : Config state -> Robot state
+program config =
     Platform.programWithFlags
-        { init = \flags -> ( { flags = flags, state = robot.init, metrics = [] }, Cmd.none )
-        , update = update robot
+        { init = \flags -> ( { flags = flags, state = config.init, metrics = [] }, Cmd.none )
+        , update = update config
         , subscriptions = subscriptions
         }
 

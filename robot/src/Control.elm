@@ -1,12 +1,12 @@
-module Action exposing (Action, followLine, grab, idle, isIdle, moveBy, output, release, update)
+module Control exposing (Control, followLine, grab, idle, isIdle, moveBy, output, release, update)
 
 import LightCalibration
 import Lights
+import Perception exposing (Perception)
 import Robot exposing (Input, Output)
-import State exposing (State)
 
 
-type Action
+type Control
     = Idle
     | Grab Timer
     | Release Timer
@@ -24,27 +24,27 @@ type Timer
 -- CONSTRUCTORS
 
 
-idle : Action
+idle : Control
 idle =
     Idle
 
 
-grab : Action
+grab : Control
 grab =
     Grab Starting
 
 
-release : Action
+release : Control
 release =
     Release Starting
 
 
-followLine : Action
+followLine : Control
 followLine =
     FollowLine
 
 
-moveBy : { leftDelta : Int, rightDelta : Int } -> Action
+moveBy : { leftDelta : Int, rightDelta : Int } -> Control
 moveBy params =
     MoveBy params
 
@@ -53,9 +53,9 @@ moveBy params =
 -- INSPECTION
 
 
-isIdle : Action -> Bool
-isIdle action =
-    case action of
+isIdle : Control -> Bool
+isIdle control =
+    case control of
         Idle ->
             True
 
@@ -77,49 +77,49 @@ releaseDuration =
     2000
 
 
-update : State -> Action -> Action
-update state action =
-    case action of
+update : Perception -> Control -> Control
+update perception control =
+    case control of
         Idle ->
-            action
+            control
 
         Grab Starting ->
-            Grab (Since state.time)
+            Grab (Since perception.time)
 
         Grab (Since startTime) ->
-            if state.time - startTime > grabDuration then
+            if perception.time - startTime > grabDuration then
                 Idle
 
             else
-                action
+                control
 
         Release Starting ->
-            Release (Since state.time)
+            Release (Since perception.time)
 
         Release (Since startTime) ->
-            if state.time - startTime > releaseDuration then
+            if perception.time - startTime > releaseDuration then
                 Idle
 
             else
-                action
+                control
 
         FollowLine ->
-            action
+            control
 
         MoveBy { leftDelta, rightDelta } ->
-            MoveTo { left = state.wheels.left + leftDelta, right = state.wheels.right + rightDelta }
+            MoveTo { left = perception.wheels.left + leftDelta, right = perception.wheels.right + rightDelta }
 
         MoveTo { left, right } ->
-            if within 5 left state.wheels.left && within 5 right state.wheels.right then
+            if within 5 left perception.wheels.left && within 5 right perception.wheels.right then
                 Idle
 
             else
-                action
+                control
 
 
-output : Action -> State -> Input -> Output
-output action state input =
-    case action of
+output : Control -> Perception -> Input -> Output
+output control perception input =
+    case control of
         Idle ->
             { leftMotor = 0.0
             , rightMotor = 0.0
@@ -144,7 +144,7 @@ output action state input =
         FollowLine ->
             let
                 brightness =
-                    LightCalibration.corrected state.lightCalibration input.lightSensor
+                    LightCalibration.corrected perception.lightCalibration input.lightSensor
             in
             { leftMotor = brightness
             , rightMotor = 1.0 - brightness
@@ -160,7 +160,7 @@ output action state input =
             }
 
         MoveBy _ ->
-            output Idle state input
+            output Idle perception input
 
 
 
