@@ -645,4 +645,4 @@ Mike Onslow + Elm Detroit
 
 <https://www.meetup.com/elm-detroit/>
 
-![](https://avatars3.githubusercontent.com/u/30929018?s=200&v=4)
+![](./img/elm-detroit.jpg)
