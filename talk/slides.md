@@ -36,8 +36,8 @@ C++, Python, Go, JavaScript
 ## Questions
 
 - _Can_ Elm be used to program a robot?
-- Is it an _effective_ language?
-- Is it a _delightful_ language?
+- Is it an _effective_ language for robots?
+- Is it a _delightful_ language for robots?
 
 ## Three areas of robotics
 
@@ -88,7 +88,7 @@ type alias State = (Front, Float)
 type Front = Blocked | Unblocked
 
 update : Input -> State -> State
-update input state =
+update input _ =
     let front =
         if input.distanceSensor < 50 then
             Blocked
@@ -119,7 +119,7 @@ output (front, lightSensor) input =
             }
 ```
 
-## Does it work?
+# Does it work?
 
 # How does this work?
 
@@ -185,6 +185,8 @@ app.ports.outputs.subscribe(handleOutputs);
 setInterval(updateInput, 25);
 ```
 
+## It's that simple!
+
 # Let's make it more challenging!
 
 ## The challenge
@@ -245,12 +247,34 @@ output { perception, control } =
     Control.output control perception
 ```
 
-## Perception
+## Perception turns raw data into meaningful information
 
-- Detect obstacles
-- Detect curve direction
+## We need to detect...
+
+- Have we encountered an obstacle?
+- What direction are we going?
+
+## Lots of things to measure
+
+```haskell
+module Perception
+
+type alias Perception =
+    { time : Int
+    , claw : Claw.State
+    , bumper : Bumper
+    , wheels : WheelOdometers
+    , curvature : Curvature.State
+    , travelDirection : Maybe TravelDirection
+    , lightSensor : Float
+    }
+
+update : Input -> Perception -> Perception
+```
 
 ## Detecting obstacles
+
+Just a boolean, but by a different name
 
 ```haskell
 update : Input -> Perception -> Perception
@@ -261,11 +285,9 @@ update input perception =
                 BumperPressed
             else
                 BumperUnpressed
-
-        front = {- ... -}
     in
     { bumper = bumper
-    , front = front
+    -- ...
     }
 ```
 
@@ -342,6 +364,7 @@ type TravelDirection
 type alias Perception =
     { curvature : Curvature.State
     , travelDirection : Maybe TravelDirection
+    -- ...
     }
 ```
 
@@ -369,85 +392,9 @@ in
 - Small state machines
 - Sometimes math heavy
 
-## Behaviour is the core of your Elm application
-
-##
-
-![](./img/behaviour-state-machine.jpg)
-
-## Behaviour is your model
-
-```haskell
-module Behaviour
-
-type Behaviour
-    = Initializing { openedClaw : Bool, closedClaw : Bool }
-    | FindingObject
-    | RemovingObject (List Control)
-```
-
-## Behaviour is your update function
-
-```haskell
-module Behaviour
-
-update :
-    Perception
-    -> Control
-    -> Behaviour
-    -> ( Behaviour, Maybe Control )
-update perception currentControl behaviour =
-    -- ...
-```
-
-## Code explains behaviour
-
-```haskell
-case behaviour of
-    FindingObject ->
-        case ( claw, bumper, travelDirection) of
-            ( Claw.Open, BumperPressed, _ ) ->
-                ( behaviour, Just Control.grab )
-
-            ( Claw.Closed, _, Just travelDirection ) ->
-                removeObject travelDirection
-```
-
-## Sequential actions are slightly awkward
-
-When we find an obstacle, we need to...
-
-- Grab it
-- Turn
-- Move forwards
-- Let it go
-- Move back
-- Turn back
-
-## We need feedback from control
-
-```haskell
-update perception currentControl behaviour =
-   case behaviour of
-      RemovingObject controls ->
-         case ( Control.isIdle currentControl, controls ) of
-            ( True, next :: remaining ) ->
-               ( RemovingObject remaining, Just next )
-
-            ( True, [] ) ->
-               findObject
-
-            ( False, _ ) ->
-               ( behaviour, Nothing )
-```
-
-## Behaviour is...
-
-- Stateful
-- Symbolic
-- Explainable
-
 ## Control makes things move
+
+## Like a slightly stateful view function
 
 ```haskell
 type alias Output =
@@ -460,7 +407,7 @@ type alias Output =
 
 update : Perception -> Control -> Control
 
-output : Control -> Perception -> Input -> Output
+output : Control -> Perception -> Output
 ```
 
 ## Control constrains the things the robot can do
@@ -494,6 +441,20 @@ output control perception input =
             { leftMotor = 0.0
             , rightMotor = 0.0
             , clawMotor = 0.0
+            }
+```
+
+## Some control is stateless
+
+```haskell
+output : Control -> Perception -> Input -> Output
+output control perception input =
+    case control of
+        FollowLine ->
+            { leftMotor = perception.lightSensor
+            , rightMotor = 1.0 - perception.lightSensor
+            , clawMotor = 0.0
+            , lights = Nothing
             }
 ```
 
@@ -532,37 +493,156 @@ update perception control =
             control
 ```
 
-## Some control is stateless
-
-```haskell
-output : Control -> Perception -> Input -> Output
-output control perception input =
-    case control of
-        FollowLine ->
-            let
-                brightness =
-                    LightCalibration.corrected perception.lightCalibration input.lightSensor
-            in
-            { leftMotor = brightness
-            , rightMotor = 1.0 - brightness
-            , clawMotor = 0.0
-            , lights = Nothing
-            }
-```
-
 ## Control is...
 
 - Often very functional
 - Small state machines
 - Layered, sometimes realtime
 
+## Behaviour is the core of your Elm application
+
+##
+
+![](./img/behaviour-state-machine.jpg)
+
+## Behaviour is your model
+
+```haskell
+module Behaviour
+
+type Behaviour
+    = Initializing { openedClaw : Bool, closedClaw : Bool }
+    | FindingObject
+    | RemovingObject (List Control)
+```
+
+## Behaviour is your update function
+
+```haskell
+module Behaviour
+
+update :
+    Perception
+    -> Control
+    -> Behaviour
+    -> ( Behaviour, Maybe Control )
+update perception currentControl behaviour =
+    -- ...
+```
+
+## To behaviour, control is like a message
+
+```haskell
+case behaviour of
+   Initializing context ->
+      if Control.isIdle currentControl then
+         if not context.closedClaw then
+            ( Initializing { context | closedClaw = True }
+            , Just Control.grab )
+         else if not context.openedClaw then
+            ( Initializing { context | openedClaw = True }
+            , Just Control.release )
+         else
+            findObject
+      else
+         ( behaviour, Nothing )
+```
+
+## Behaviour should be _readable_
+
+```haskell
+case behaviour of
+    FindingObject ->
+        case ( claw, bumper, travelDirection) of
+            ( Claw.Open, BumperPressed, _ ) ->
+                ( behaviour, Just Control.grab )
+
+            ( Claw.Closed, _, Just travelDirection ) ->
+                removeObject travelDirection
+
+            ( Claw.Closed, _, _ ) ->
+                ( behaviour, Just Control.followLine )
+```
+
+## Sequential actions are slightly awkward
+
+When we find an obstacle, we need to...
+
+- Grab it
+- Turn
+- Move forwards
+- Let it go
+- Move back
+- Turn back
+
+## Behaviours can require arguments
+
+```haskell
+removeObject : TravelDirection -> (Behaviour, Maybe Control)
+removeObject direction =
+   let
+      turnLeft = Control.moveBy {- ... -}
+      turnRight = Control.moveBy {- ... -}
+      ( turn, turnBack ) =
+         case direction of
+            Clockwise -> ( turnLeft, turnRight )
+            CounterClockwise -> ( turnRight, turnLeft )
+      -- ...
+      actions = [ turn, forward, release, reverse, turnBack ]
+   in
+   ( RemovingObject actions, Just Control.idle )
+```
+
+## We need feedback from control
+
+```haskell
+update perception currentControl behaviour =
+   case behaviour of
+      RemovingObject controls ->
+         case ( Control.isIdle currentControl, controls ) of
+            ( True, next :: remaining ) ->
+               ( RemovingObject remaining, Just next )
+
+            ( True, [] ) ->
+               findObject
+
+            ( False, _ ) ->
+               ( behaviour, Nothing )
+```
+
+## Behaviour is...
+
+- Stateful
+- Symbolic
+- Explainable
+
+# Does it work?
+
 # Wrapping Up
 
-## Is it effective for robotics?
+## Can Elm be used to program a robot?
 
-- Is Elm an effective _language_?
+Yes!
+
+## Is it effective?
+
 - Is Elm an effective _platform_?
+- Is Elm an effective _language_?
+
+## Is it delightful?
+
+I think so!
+
+Decide for yourself!
+
+<https://github.com/adeschamps/programming-robots-with-elm/>
 
 ## Thank you!
+
+Matt Griffith
+
+Mike Onslow + Elm Detroit
+
+<https://www.meetup.com/elm-detroit/>
 
 ![](https://avatars3.githubusercontent.com/u/30929018?s=200&v=4)
