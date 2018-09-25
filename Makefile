@@ -14,8 +14,6 @@ slides: slides.html ## Generate revealjs slides
 
 slides-pdf: slides.pdf ## Generate LaTeX beamer PDF slides
 
-dependencies: ## Download dependencies
-	yarn
 
 
 script.pdf: script.md

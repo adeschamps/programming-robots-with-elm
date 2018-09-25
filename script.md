@@ -440,6 +440,10 @@ and turning them into more meaningful information.
 
 ## Behaviour
 
+> Behaviour is your model
+
+
+
 Something I enjoy about Elm is using the type system to model the
 different states my programs can be in. In some cases, that just means
 mapping raw input to values that are more semantically meaningful. For
