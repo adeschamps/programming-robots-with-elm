@@ -378,9 +378,9 @@ let
     travelDirection =
         case Curvature.curve curvature of
             Curvature.Unknown -> Nothing
-            Curvature.Straight -> perception.travelDirection
             Curvature.Left -> Just CounterClockwise
             Curvature.Right -> Just Clockwise
+            Curvature.Straight -> perception.travelDirection
 in
 { travelDirection = travelDirection, -- ...
 }
@@ -513,6 +513,7 @@ module Behaviour
 type Behaviour
     = Initializing { openedClaw : Bool, closedClaw : Bool }
     | FindingObject
+    | CarryingObject
     | RemovingObject (List Control)
 ```
 
@@ -553,15 +554,28 @@ case behaviour of
 ```haskell
 case behaviour of
     FindingObject ->
-        case ( claw, bumper, travelDirection) of
-            ( Claw.Open, BumperPressed, _ ) ->
+        case ( claw, bumper) of
+            ( Claw.Open, BumperPressed ) ->
                 ( behaviour, Just Control.grab )
 
-            ( Claw.Closed, _, Just travelDirection ) ->
-                removeObject travelDirection
+            ( Claw.Closed, _ ) ->
+                ( CarryingObject, Nothing )
 
-            ( Claw.Closed, _, _ ) ->
+            _ ->
                 ( behaviour, Just Control.followLine )
+```
+
+## Some transitions require information
+
+```haskell
+case behaviour of
+    CarryingObject ->
+        case perception.travelDirection of
+            Nothing ->
+                ( behaviour, Just Control.followLine )
+
+            Just travelDirection ->
+                removeObject travelDirection
 ```
 
 ## Sequential actions are slightly awkward
