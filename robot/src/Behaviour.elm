@@ -9,6 +9,7 @@ import Perception exposing (Bumper(..), Perception)
 type Behaviour
     = Initializing { openedClaw : Bool, closedClaw : Bool }
     | FindingObject
+    | CarryingObject
     | RemovingObject (List Control)
 
 
@@ -37,22 +38,23 @@ update perception currentControl behaviour =
                 ( behaviour, Nothing )
 
         FindingObject ->
-            case ( Claw.position perception.claw, perception.bumper, perception.travelDirection ) of
-                ( Claw.Open, BumperPressed, _ ) ->
+            case ( Claw.position perception.claw, perception.bumper ) of
+                ( Claw.Open, BumperPressed ) ->
                     ( behaviour, Just Control.grab )
 
-                ( Claw.Closed, _, Just travelDirection ) ->
-                    removeObject travelDirection
-
-                ( Claw.Closed, _, _ ) ->
-                    if Control.isIdle currentControl then
-                        ( behaviour, Just Control.followLine )
-
-                    else
-                        ( behaviour, Nothing )
+                ( Claw.Closed, _ ) ->
+                    ( CarryingObject, Nothing )
 
                 _ ->
                     ( behaviour, Nothing )
+
+        CarryingObject ->
+            case perception.travelDirection of
+                Nothing ->
+                    ( behaviour, Just Control.followLine )
+
+                Just travelDirection ->
+                    removeObject travelDirection
 
         RemovingObject controls ->
             case ( Control.isIdle currentControl, controls ) of
@@ -118,6 +120,9 @@ metrics behaviour time =
 
                 FindingObject ->
                     "finding"
+
+                CarryingObject ->
+                    "carrying"
 
                 RemovingObject _ ->
                     "removing"
