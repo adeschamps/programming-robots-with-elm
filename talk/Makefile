@@ -14,6 +14,8 @@ slides: slides.html ## Generate revealjs slides
 
 slides-pdf: slides.pdf ## Generate LaTeX beamer PDF slides
 
+dependencies: ## Download dependencies
+	yarn
 
 
 script.pdf: script.md
@@ -23,7 +25,7 @@ script.docx: script.md
 	pandoc -o $@ $<
 
 slides.html: slides.md Makefile
-	pandoc -t revealjs -s -o slides.html slides.md -V revealjs-url=http://lab.hakim.se/reveal-js -V transition=fade --slide-level 2 -i --highlight-style zenburn
+	pandoc -t revealjs -s -o slides.html slides.md -V revealjs-url=./reveal.js -V transition=fade --slide-level 2 -i --highlight-style zenburn
 
 slides.pdf: slides.md
 	pandoc -o $@ $< -t beamer

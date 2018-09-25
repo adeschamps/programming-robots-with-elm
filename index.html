@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="http://lab.hakim.se/reveal-js/css/reveal.css">
+  <link rel="stylesheet" href="./reveal.js/css/reveal.css">
   <style type="text/css">
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -78,17 +78,17 @@ code span.va { } /* Variable */
 code span.vs { color: #cc9393; } /* VerbatimString */
 code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
   </style>
-  <link rel="stylesheet" href="http://lab.hakim.se/reveal-js/css/theme/black.css" id="theme">
+  <link rel="stylesheet" href="./reveal.js/css/theme/black.css" id="theme">
   <!-- Printing and PDF exports -->
   <script>
     var link = document.createElement( 'link' );
     link.rel = 'stylesheet';
     link.type = 'text/css';
-    link.href = window.location.search.match( /print-pdf/gi ) ? 'http://lab.hakim.se/reveal-js/css/print/pdf.css' : 'http://lab.hakim.se/reveal-js/css/print/paper.css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? './reveal.js/css/print/pdf.css' : './reveal.js/css/print/paper.css';
     document.getElementsByTagName( 'head' )[0].appendChild( link );
   </script>
   <!--[if lt IE 9]>
-  <script src="http://lab.hakim.se/reveal-js/lib/js/html5shiv.js"></script>
+  <script src="./reveal.js/lib/js/html5shiv.js"></script>
   <![endif]-->
 </head>
 <body>
@@ -131,8 +131,8 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <h2>Questions</h2>
 <ul>
 <li class="fragment"><em>Can</em> Elm be used to program a robot?</li>
-<li class="fragment">Is it an <em>effective</em> language?</li>
-<li class="fragment">Is it a <em>delightful</em> language?</li>
+<li class="fragment">Is it an <em>effective</em> language for robots?</li>
+<li class="fragment">Is it a <em>delightful</em> language for robots?</li>
 </ul>
 </section>
 <section id="three-areas-of-robotics" class="slide level2">
@@ -182,7 +182,7 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">type</span> <span class="dt">Front</span> <span class="fu">=</span> <span class="dt">Blocked</span> <span class="fu">|</span> <span class="dt">Unblocked</span></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb3-5" data-line-number="5">update <span class="fu">:</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> <span class="dt">State</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">update input state <span class="fu">=</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">update input _ <span class="fu">=</span></a>
 <a class="sourceLine" id="cb3-7" data-line-number="7">    <span class="kw">let</span> front <span class="fu">=</span></a>
 <a class="sourceLine" id="cb3-8" data-line-number="8">        <span class="kw">if</span> input<span class="fu">.</span>distanceSensor <span class="fu">&lt;</span> <span class="dv">50</span> <span class="kw">then</span></a>
 <a class="sourceLine" id="cb3-9" data-line-number="9">            <span class="dt">Blocked</span></a>
@@ -210,9 +210,7 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <a class="sourceLine" id="cb4-11" data-line-number="11">            , rightMotor <span class="fu">=</span> <span class="fl">1.0</span> <span class="fu">-</span> lightSensor</a>
 <a class="sourceLine" id="cb4-12" data-line-number="12">            }</a></code></pre></div>
 </section>
-<section id="does-it-work" class="slide level2">
-<h2>Does it work?</h2>
-</section>
+<section><section id="does-it-work" class="title-slide slide level1"><h1>Does it work?</h1></section></section>
 <section><section id="how-does-this-work" class="title-slide slide level1"><h1>How does this work?</h1></section><section id="ports" class="slide level2">
 <h2>Ports!</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">port inputs <span class="fu">:</span> (<span class="dt">Input</span> <span class="ot">-&gt;</span> msg) <span class="ot">-&gt;</span> <span class="dt">Sub</span> msg</a>
@@ -263,6 +261,8 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <a class="sourceLine" id="cb8-11" data-line-number="11"><span class="kw">var</span> app <span class="op">=</span> <span class="va">Elm</span>.<span class="va">Main</span>.<span class="at">init</span>()<span class="op">;</span></a>
 <a class="sourceLine" id="cb8-12" data-line-number="12"><span class="va">app</span>.<span class="va">ports</span>.<span class="va">outputs</span>.<span class="at">subscribe</span>(handleOutputs)<span class="op">;</span></a>
 <a class="sourceLine" id="cb8-13" data-line-number="13"><span class="at">setInterval</span>(updateInput<span class="op">,</span> <span class="dv">25</span>)<span class="op">;</span></a></code></pre></div>
+</section><section id="its-that-simple" class="slide level2">
+<h2>It’s that simple!</h2>
 </section></section>
 <section><section id="lets-make-it-more-challenging" class="title-slide slide level1"><h1>Let’s make it more challenging!</h1></section><section id="the-challenge" class="slide level2">
 <h2>The challenge</h2>
@@ -313,41 +313,57 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1">output <span class="fu">:</span> <span class="dt">Model</span> <span class="ot">-&gt;</span> <span class="dt">Output</span></a>
 <a class="sourceLine" id="cb11-2" data-line-number="2">output { perception, control } <span class="fu">=</span></a>
 <a class="sourceLine" id="cb11-3" data-line-number="3">    Control.output control perception</a></code></pre></div>
-</section><section id="perception" class="slide level2">
-<h2>Perception</h2>
+</section><section id="perception-turns-raw-data-into-meaningful-information" class="slide level2">
+<h2>Perception turns raw data into meaningful information</h2>
+</section><section id="we-need-to-detect" class="slide level2">
+<h2>We need to detect…</h2>
 <ul>
-<li class="fragment">Detect obstacles</li>
-<li class="fragment">Detect curve direction</li>
+<li class="fragment">Have we encountered an obstacle?</li>
+<li class="fragment">What direction are we going?</li>
 </ul>
+</section><section id="lots-of-things-to-measure" class="slide level2">
+<h2>Lots of things to measure</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Perception</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw">type</span> alias <span class="dt">Perception</span> <span class="fu">=</span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">    { time <span class="fu">:</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">    , claw <span class="fu">:</span> <span class="dt">Claw.State</span></a>
+<a class="sourceLine" id="cb12-6" data-line-number="6">    , bumper <span class="fu">:</span> <span class="dt">Bumper</span></a>
+<a class="sourceLine" id="cb12-7" data-line-number="7">    , wheels <span class="fu">:</span> <span class="dt">WheelOdometers</span></a>
+<a class="sourceLine" id="cb12-8" data-line-number="8">    , curvature <span class="fu">:</span> <span class="dt">Curvature.State</span></a>
+<a class="sourceLine" id="cb12-9" data-line-number="9">    , travelDirection <span class="fu">:</span> <span class="dt">Maybe</span> <span class="dt">TravelDirection</span></a>
+<a class="sourceLine" id="cb12-10" data-line-number="10">    , lightSensor <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="cb12-11" data-line-number="11">    }</a>
+<a class="sourceLine" id="cb12-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb12-13" data-line-number="13">update <span class="fu">:</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span></a></code></pre></div>
 </section><section id="detecting-obstacles" class="slide level2">
 <h2>Detecting obstacles</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1">update <span class="fu">:</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">update input perception <span class="fu">=</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3">    <span class="kw">let</span></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4">        bumper <span class="fu">=</span></a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">            <span class="kw">if</span> input<span class="fu">.</span>touchSensor <span class="kw">then</span></a>
-<a class="sourceLine" id="cb12-6" data-line-number="6">                <span class="dt">BumperPressed</span></a>
-<a class="sourceLine" id="cb12-7" data-line-number="7">            <span class="kw">else</span></a>
-<a class="sourceLine" id="cb12-8" data-line-number="8">                <span class="dt">BumperUnpressed</span></a>
-<a class="sourceLine" id="cb12-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb12-10" data-line-number="10">        front <span class="fu">=</span> <span class="co">{- ... -}</span></a>
-<a class="sourceLine" id="cb12-11" data-line-number="11">    <span class="kw">in</span></a>
-<a class="sourceLine" id="cb12-12" data-line-number="12">    { bumper <span class="fu">=</span> bumper</a>
-<a class="sourceLine" id="cb12-13" data-line-number="13">    , front <span class="fu">=</span> front</a>
-<a class="sourceLine" id="cb12-14" data-line-number="14">    }</a></code></pre></div>
+<p>Just a boolean, but by a different name</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1">update <span class="fu">:</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">update input perception <span class="fu">=</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">    <span class="kw">let</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">        bumper <span class="fu">=</span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">            <span class="kw">if</span> input<span class="fu">.</span>touchSensor <span class="kw">then</span></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">                <span class="dt">BumperPressed</span></a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">            <span class="kw">else</span></a>
+<a class="sourceLine" id="cb13-8" data-line-number="8">                <span class="dt">BumperUnpressed</span></a>
+<a class="sourceLine" id="cb13-9" data-line-number="9">    <span class="kw">in</span></a>
+<a class="sourceLine" id="cb13-10" data-line-number="10">    { bumper <span class="fu">=</span> bumper</a>
+<a class="sourceLine" id="cb13-11" data-line-number="11">    <span class="co">-- ...</span></a>
+<a class="sourceLine" id="cb13-12" data-line-number="12">    }</a></code></pre></div>
 </section><section id="measure-curvature" class="slide level2">
 <h2>Measure curvature</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Curvature</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="kw">type</span> <span class="dt">Curve</span> <span class="fu">=</span> <span class="dt">Unknown</span> <span class="fu">|</span> <span class="dt">Straight</span> <span class="fu">|</span> <span class="dt">Left</span> <span class="fu">|</span> <span class="dt">Right</span></a>
-<a class="sourceLine" id="cb13-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw">type</span> <span class="dt">State</span></a>
-<a class="sourceLine" id="cb13-6" data-line-number="6">    <span class="fu">=</span> <span class="dt">State</span></a>
-<a class="sourceLine" id="cb13-7" data-line-number="7">        { previous <span class="fu">:</span> <span class="dt">Maybe</span> { left <span class="fu">:</span> <span class="dt">Int</span>, right <span class="fu">:</span> <span class="dt">Int</span> }</a>
-<a class="sourceLine" id="cb13-8" data-line-number="8">        , curve <span class="fu">:</span> <span class="dt">Curve</span></a>
-<a class="sourceLine" id="cb13-9" data-line-number="9">        , raw <span class="fu">:</span> <span class="dt">Float</span></a>
-<a class="sourceLine" id="cb13-10" data-line-number="10">        , average <span class="fu">:</span> <span class="dt">Float</span></a>
-<a class="sourceLine" id="cb13-11" data-line-number="11">        }</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Curvature</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="kw">type</span> <span class="dt">Curve</span> <span class="fu">=</span> <span class="dt">Unknown</span> <span class="fu">|</span> <span class="dt">Straight</span> <span class="fu">|</span> <span class="dt">Left</span> <span class="fu">|</span> <span class="dt">Right</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="kw">type</span> <span class="dt">State</span></a>
+<a class="sourceLine" id="cb14-6" data-line-number="6">    <span class="fu">=</span> <span class="dt">State</span></a>
+<a class="sourceLine" id="cb14-7" data-line-number="7">        { previous <span class="fu">:</span> <span class="dt">Maybe</span> { left <span class="fu">:</span> <span class="dt">Int</span>, right <span class="fu">:</span> <span class="dt">Int</span> }</a>
+<a class="sourceLine" id="cb14-8" data-line-number="8">        , curve <span class="fu">:</span> <span class="dt">Curve</span></a>
+<a class="sourceLine" id="cb14-9" data-line-number="9">        , raw <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="cb14-10" data-line-number="10">        , average <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="cb14-11" data-line-number="11">        }</a></code></pre></div>
 </section><section id="measure-curvature-1" class="slide level2">
 <h2>Measure curvature</h2>
 <p><br /><span class="math display"><em>d</em><em>e</em><em>l</em><em>t</em><em>a</em> = <em>Δ</em><sub><em>l</em><em>e</em><em>f</em><em>t</em></sub> − <em>Δ</em><sub><em>r</em><em>i</em><em>g</em><em>h</em><em>t</em></sub></span><br /> <br /><span class="math display"><em>t</em><em>o</em><em>t</em><em>a</em><em>l</em><em>T</em><em>r</em><em>a</em><em>v</em><em>e</em><em>l</em> = <em>Δ</em><sub><em>l</em><em>e</em><em>f</em><em>t</em></sub> + <em>Δ</em><sub><em>r</em><em>i</em><em>g</em><em>h</em><em>t</em></sub></span><br /> <br /><span class="math display"><em>r</em><em>a</em><em>w</em> = <em>d</em><em>e</em><em>l</em><em>t</em><em>a</em>/<em>t</em><em>o</em><em>t</em><em>a</em><em>l</em><em>T</em><em>r</em><em>a</em><em>v</em><em>e</em><em>l</em></span><br /> <br /><span class="math display"><em>a</em><em>v</em><em>e</em><em>r</em><em>a</em><em>g</em><em>e</em><sub><em>n</em></sub> = <em>α</em> ⋅ <em>r</em><em>a</em><em>w</em> + (1 − <em>α</em>) ⋅ <em>a</em><em>v</em><em>e</em><em>r</em><em>a</em><em>g</em><em>e</em><sub><em>n</em> − 1</sub></span><br /></p>
@@ -356,65 +372,156 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <p><img data-src="./img/curve-state-machine.jpg" /></p>
 </section><section id="categorize-curve-1" class="slide level2">
 <h2>Categorize curve</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1">calculateCurve <span class="fu">:</span> <span class="dt">Float</span> <span class="ot">-&gt;</span> <span class="dt">Curve</span> <span class="ot">-&gt;</span> <span class="dt">Curve</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">calculateCurve curvature current <span class="fu">=</span></a>
-<a class="sourceLine" id="cb14-3" data-line-number="3">    <span class="kw">case</span> current <span class="kw">of</span></a>
-<a class="sourceLine" id="cb14-4" data-line-number="4">        <span class="dt">Unknown</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb14-5" data-line-number="5">            <span class="kw">if</span> curvature <span class="fu">&gt;</span> <span class="fu">-</span><span class="fl">0.2</span> <span class="fu">&amp;&amp;</span> curvature <span class="fu">&lt;</span> <span class="fl">0.2</span> <span class="kw">then</span></a>
-<a class="sourceLine" id="cb14-6" data-line-number="6">                <span class="dt">Straight</span></a>
-<a class="sourceLine" id="cb14-7" data-line-number="7">            <span class="kw">else</span></a>
-<a class="sourceLine" id="cb14-8" data-line-number="8">                current</a>
-<a class="sourceLine" id="cb14-9" data-line-number="9">        <span class="dt">Left</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb14-10" data-line-number="10">            <span class="kw">if</span> curvature <span class="fu">&gt;</span> <span class="fu">-</span><span class="fl">0.2</span> <span class="kw">then</span></a>
-<a class="sourceLine" id="cb14-11" data-line-number="11">                <span class="dt">Straight</span></a>
-<a class="sourceLine" id="cb14-12" data-line-number="12">            <span class="kw">else</span></a>
-<a class="sourceLine" id="cb14-13" data-line-number="13">                current</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1">calculateCurve <span class="fu">:</span> <span class="dt">Float</span> <span class="ot">-&gt;</span> <span class="dt">Curve</span> <span class="ot">-&gt;</span> <span class="dt">Curve</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">calculateCurve curvature current <span class="fu">=</span></a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">    <span class="kw">case</span> current <span class="kw">of</span></a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">        <span class="dt">Unknown</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb15-5" data-line-number="5">            <span class="kw">if</span> curvature <span class="fu">&gt;</span> <span class="fu">-</span><span class="fl">0.2</span> <span class="fu">&amp;&amp;</span> curvature <span class="fu">&lt;</span> <span class="fl">0.2</span> <span class="kw">then</span></a>
+<a class="sourceLine" id="cb15-6" data-line-number="6">                <span class="dt">Straight</span></a>
+<a class="sourceLine" id="cb15-7" data-line-number="7">            <span class="kw">else</span></a>
+<a class="sourceLine" id="cb15-8" data-line-number="8">                current</a>
+<a class="sourceLine" id="cb15-9" data-line-number="9">        <span class="dt">Left</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb15-10" data-line-number="10">            <span class="kw">if</span> curvature <span class="fu">&gt;</span> <span class="fu">-</span><span class="fl">0.2</span> <span class="kw">then</span></a>
+<a class="sourceLine" id="cb15-11" data-line-number="11">                <span class="dt">Straight</span></a>
+<a class="sourceLine" id="cb15-12" data-line-number="12">            <span class="kw">else</span></a>
+<a class="sourceLine" id="cb15-13" data-line-number="13">                current</a></code></pre></div>
 </section><section id="things-go-wrong" class="slide level2">
 <h2>Things go wrong!</h2>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1">newCurve <span class="fu">=</span></a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">    calculateCurve average state<span class="fu">.</span>curve</a>
-<a class="sourceLine" id="cb15-3" data-line-number="3">    <span class="fu">|&gt;</span> resetIfExtreme average</a>
-<a class="sourceLine" id="cb15-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb15-5" data-line-number="5"><span class="co">-- ...</span></a>
-<a class="sourceLine" id="cb15-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb15-7" data-line-number="7">resetIfExtreme <span class="fu">:</span> <span class="dt">Float</span> <span class="ot">-&gt;</span> <span class="dt">Curve</span> <span class="ot">-&gt;</span> <span class="dt">Curve</span></a>
-<a class="sourceLine" id="cb15-8" data-line-number="8">resetIfExtreme curvature current <span class="fu">=</span></a>
-<a class="sourceLine" id="cb15-9" data-line-number="9">    <span class="kw">if</span> abs curvature <span class="fu">&gt;</span> <span class="fl">0.7</span> <span class="kw">then</span></a>
-<a class="sourceLine" id="cb15-10" data-line-number="10">        <span class="dt">Unknown</span></a>
-<a class="sourceLine" id="cb15-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb15-12" data-line-number="12">    <span class="kw">else</span></a>
-<a class="sourceLine" id="cb15-13" data-line-number="13">        current</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" data-line-number="1">newCurve <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">    calculateCurve average state<span class="fu">.</span>curve</a>
+<a class="sourceLine" id="cb16-3" data-line-number="3">    <span class="fu">|&gt;</span> resetIfExtreme average</a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="co">-- ...</span></a>
+<a class="sourceLine" id="cb16-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb16-7" data-line-number="7">resetIfExtreme <span class="fu">:</span> <span class="dt">Float</span> <span class="ot">-&gt;</span> <span class="dt">Curve</span> <span class="ot">-&gt;</span> <span class="dt">Curve</span></a>
+<a class="sourceLine" id="cb16-8" data-line-number="8">resetIfExtreme curvature current <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-9" data-line-number="9">    <span class="kw">if</span> abs curvature <span class="fu">&gt;</span> <span class="fl">0.7</span> <span class="kw">then</span></a>
+<a class="sourceLine" id="cb16-10" data-line-number="10">        <span class="dt">Unknown</span></a>
+<a class="sourceLine" id="cb16-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb16-12" data-line-number="12">    <span class="kw">else</span></a>
+<a class="sourceLine" id="cb16-13" data-line-number="13">        current</a></code></pre></div>
 </section><section id="categorize-direction" class="slide level2">
 <h2>Categorize direction</h2>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">type</span> <span class="dt">TravelDirection</span></a>
-<a class="sourceLine" id="cb16-2" data-line-number="2">    <span class="fu">=</span> <span class="dt">Clockwise</span></a>
-<a class="sourceLine" id="cb16-3" data-line-number="3">    <span class="fu">|</span> <span class="dt">CounterClockwise</span></a>
-<a class="sourceLine" id="cb16-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="kw">type</span> alias <span class="dt">Perception</span> <span class="fu">=</span></a>
-<a class="sourceLine" id="cb16-6" data-line-number="6">    { curvature <span class="fu">:</span> <span class="dt">Curvature.State</span></a>
-<a class="sourceLine" id="cb16-7" data-line-number="7">    , travelDirection <span class="fu">:</span> <span class="dt">Maybe</span> <span class="dt">TravelDirection</span></a>
-<a class="sourceLine" id="cb16-8" data-line-number="8">    }</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">type</span> <span class="dt">TravelDirection</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">    <span class="fu">=</span> <span class="dt">Clockwise</span></a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">    <span class="fu">|</span> <span class="dt">CounterClockwise</span></a>
+<a class="sourceLine" id="cb17-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb17-5" data-line-number="5"><span class="kw">type</span> alias <span class="dt">Perception</span> <span class="fu">=</span></a>
+<a class="sourceLine" id="cb17-6" data-line-number="6">    { curvature <span class="fu">:</span> <span class="dt">Curvature.State</span></a>
+<a class="sourceLine" id="cb17-7" data-line-number="7">    , travelDirection <span class="fu">:</span> <span class="dt">Maybe</span> <span class="dt">TravelDirection</span></a>
+<a class="sourceLine" id="cb17-8" data-line-number="8">    <span class="co">-- ...</span></a>
+<a class="sourceLine" id="cb17-9" data-line-number="9">    }</a></code></pre></div>
 </section><section id="put-it-all-together" class="slide level2">
 <h2>Put it all together</h2>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">let</span></a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">    wheels <span class="fu">=</span> { left <span class="fu">=</span> input<span class="fu">.</span>leftMotor</a>
-<a class="sourceLine" id="cb17-3" data-line-number="3">             , right <span class="fu">=</span> input<span class="fu">.</span>rightMotor }</a>
-<a class="sourceLine" id="cb17-4" data-line-number="4">    curvature <span class="fu">=</span> Curvature.update wheels perception<span class="fu">.</span>curvature</a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">    travelDirection <span class="fu">=</span></a>
-<a class="sourceLine" id="cb17-6" data-line-number="6">        <span class="kw">case</span> Curvature.curve curvature <span class="kw">of</span></a>
-<a class="sourceLine" id="cb17-7" data-line-number="7">            <span class="dt">Curvature.Unknown</span> <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb17-8" data-line-number="8">            <span class="dt">Curvature.Straight</span> <span class="ot">-&gt;</span> perception<span class="fu">.</span>travelDirection</a>
-<a class="sourceLine" id="cb17-9" data-line-number="9">            <span class="dt">Curvature.Left</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="dt">CounterClockwise</span></a>
-<a class="sourceLine" id="cb17-10" data-line-number="10">            <span class="dt">Curvature.Right</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="dt">Clockwise</span></a>
-<a class="sourceLine" id="cb17-11" data-line-number="11"><span class="kw">in</span></a>
-<a class="sourceLine" id="cb17-12" data-line-number="12">{ travelDirection <span class="fu">=</span> travelDirection, <span class="co">-- ...</span></a>
-<a class="sourceLine" id="cb17-13" data-line-number="13">}</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">let</span></a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">    wheels <span class="fu">=</span> { left <span class="fu">=</span> input<span class="fu">.</span>leftMotor</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">             , right <span class="fu">=</span> input<span class="fu">.</span>rightMotor }</a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">    curvature <span class="fu">=</span> Curvature.update wheels perception<span class="fu">.</span>curvature</a>
+<a class="sourceLine" id="cb18-5" data-line-number="5">    travelDirection <span class="fu">=</span></a>
+<a class="sourceLine" id="cb18-6" data-line-number="6">        <span class="kw">case</span> Curvature.curve curvature <span class="kw">of</span></a>
+<a class="sourceLine" id="cb18-7" data-line-number="7">            <span class="dt">Curvature.Unknown</span> <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb18-8" data-line-number="8">            <span class="dt">Curvature.Straight</span> <span class="ot">-&gt;</span> perception<span class="fu">.</span>travelDirection</a>
+<a class="sourceLine" id="cb18-9" data-line-number="9">            <span class="dt">Curvature.Left</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="dt">CounterClockwise</span></a>
+<a class="sourceLine" id="cb18-10" data-line-number="10">            <span class="dt">Curvature.Right</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="dt">Clockwise</span></a>
+<a class="sourceLine" id="cb18-11" data-line-number="11"><span class="kw">in</span></a>
+<a class="sourceLine" id="cb18-12" data-line-number="12">{ travelDirection <span class="fu">=</span> travelDirection, <span class="co">-- ...</span></a>
+<a class="sourceLine" id="cb18-13" data-line-number="13">}</a></code></pre></div>
 </section><section id="perception-is" class="slide level2">
 <h2>Perception is…</h2>
 <ul>
 <li class="fragment">Often very functional</li>
 <li class="fragment">Small state machines</li>
 <li class="fragment">Sometimes math heavy</li>
+</ul>
+</section><section id="control-makes-things-move" class="slide level2">
+<h2>Control makes things move</h2>
+</section><section id="like-a-slightly-stateful-view-function" class="slide level2">
+<h2>Like a slightly stateful view function</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">type</span> alias <span class="dt">Output</span> <span class="fu">=</span></a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">    { leftMotor <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">    , rightMotor <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">    , clawMotor <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="cb19-5" data-line-number="5">    }</a>
+<a class="sourceLine" id="cb19-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb19-7" data-line-number="7"><span class="co">-- module Control</span></a>
+<a class="sourceLine" id="cb19-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb19-9" data-line-number="9">update <span class="fu">:</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
+<a class="sourceLine" id="cb19-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb19-11" data-line-number="11">output <span class="fu">:</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Output</span></a></code></pre></div>
+</section><section id="control-constrains-the-things-the-robot-can-do" class="slide level2">
+<h2>Control constrains the things the robot can do</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">type</span> <span class="dt">Control</span></a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">    <span class="fu">=</span> <span class="dt">Idle</span></a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">    <span class="fu">|</span> <span class="dt">Grab</span> <span class="dt">Timer</span></a>
+<a class="sourceLine" id="cb20-4" data-line-number="4">    <span class="fu">|</span> <span class="dt">Release</span> <span class="dt">Timer</span></a>
+<a class="sourceLine" id="cb20-5" data-line-number="5">    <span class="fu">|</span> <span class="dt">FollowLine</span></a>
+<a class="sourceLine" id="cb20-6" data-line-number="6">    <span class="fu">|</span> <span class="dt">MoveTo</span> { left <span class="fu">:</span> <span class="dt">Int</span>, right <span class="fu">:</span> <span class="dt">Int</span> }</a>
+<a class="sourceLine" id="cb20-7" data-line-number="7">    <span class="fu">|</span> <span class="dt">MoveBy</span> { leftDelta <span class="fu">:</span> <span class="dt">Int</span>, rightDelta <span class="fu">:</span> <span class="dt">Int</span> }</a></code></pre></div>
+</section><section id="some-control-is-trivial" class="slide level2">
+<h2>Some control is trivial</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" data-line-number="1">idle <span class="fu">:</span> <span class="dt">Control</span></a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">idle <span class="fu">=</span> <span class="dt">Idle</span></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4">update <span class="fu">:</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5">update perception control <span class="fu">=</span></a>
+<a class="sourceLine" id="cb21-6" data-line-number="6">    <span class="kw">case</span> control <span class="kw">of</span></a>
+<a class="sourceLine" id="cb21-7" data-line-number="7">        <span class="dt">Idle</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb21-8" data-line-number="8">            control</a>
+<a class="sourceLine" id="cb21-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb21-10" data-line-number="10">output <span class="fu">:</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">Output</span></a>
+<a class="sourceLine" id="cb21-11" data-line-number="11">output control perception input <span class="fu">=</span></a>
+<a class="sourceLine" id="cb21-12" data-line-number="12">    <span class="kw">case</span> control <span class="kw">of</span></a>
+<a class="sourceLine" id="cb21-13" data-line-number="13">        <span class="dt">Idle</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb21-14" data-line-number="14">            { leftMotor <span class="fu">=</span> <span class="fl">0.0</span></a>
+<a class="sourceLine" id="cb21-15" data-line-number="15">            , rightMotor <span class="fu">=</span> <span class="fl">0.0</span></a>
+<a class="sourceLine" id="cb21-16" data-line-number="16">            , clawMotor <span class="fu">=</span> <span class="fl">0.0</span></a>
+<a class="sourceLine" id="cb21-17" data-line-number="17">            }</a></code></pre></div>
+</section><section id="some-control-is-stateless" class="slide level2">
+<h2>Some control is stateless</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" data-line-number="1">output <span class="fu">:</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">Output</span></a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">output control perception input <span class="fu">=</span></a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">    <span class="kw">case</span> control <span class="kw">of</span></a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">        <span class="dt">FollowLine</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb22-5" data-line-number="5">            { leftMotor <span class="fu">=</span> perception<span class="fu">.</span>lightSensor</a>
+<a class="sourceLine" id="cb22-6" data-line-number="6">            , rightMotor <span class="fu">=</span> <span class="fl">1.0</span> <span class="fu">-</span> perception<span class="fu">.</span>lightSensor</a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">            , clawMotor <span class="fu">=</span> <span class="fl">0.0</span></a>
+<a class="sourceLine" id="cb22-8" data-line-number="8">            , lights <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb22-9" data-line-number="9">            }</a></code></pre></div>
+</section><section id="some-control-is-a-bit-stateful" class="slide level2">
+<h2>Some control is a bit stateful</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" data-line-number="1">update <span class="fu">:</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
+<a class="sourceLine" id="cb23-2" data-line-number="2">update perception control <span class="fu">=</span></a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">   <span class="kw">case</span> control <span class="kw">of</span></a>
+<a class="sourceLine" id="cb23-4" data-line-number="4">      <span class="dt">Grab</span> <span class="dt">Starting</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb23-5" data-line-number="5">         <span class="dt">Grab</span> (<span class="dt">Since</span> perception<span class="fu">.</span>time)</a>
+<a class="sourceLine" id="cb23-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb23-7" data-line-number="7">      <span class="dt">Grab</span> (<span class="dt">Since</span> startTime) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb23-8" data-line-number="8">         <span class="kw">if</span> perception<span class="fu">.</span>time <span class="fu">-</span> startTime <span class="fu">&gt;</span> grabDuration <span class="kw">then</span></a>
+<a class="sourceLine" id="cb23-9" data-line-number="9">            <span class="dt">Idle</span></a>
+<a class="sourceLine" id="cb23-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb23-11" data-line-number="11">         <span class="kw">else</span></a>
+<a class="sourceLine" id="cb23-12" data-line-number="12">            control</a></code></pre></div>
+</section><section id="some-control-uses-state-machines" class="slide level2">
+<h2>Some control uses state machines</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" data-line-number="1">update <span class="fu">:</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">update perception control <span class="fu">=</span></a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">   <span class="kw">case</span> control <span class="kw">of</span></a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">      <span class="dt">MoveBy</span> { leftDelta, rightDelta } <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">         <span class="dt">MoveTo</span></a>
+<a class="sourceLine" id="cb24-6" data-line-number="6">            { left <span class="fu">=</span> perception<span class="fu">.</span>wheels<span class="fu">.</span>left <span class="fu">+</span> leftDelta</a>
+<a class="sourceLine" id="cb24-7" data-line-number="7">            , right <span class="fu">=</span> perception<span class="fu">.</span>wheels<span class="fu">.</span>right <span class="fu">+</span> rightDelta</a>
+<a class="sourceLine" id="cb24-8" data-line-number="8">            }</a>
+<a class="sourceLine" id="cb24-9" data-line-number="9">      <span class="dt">MoveTo</span> { left, right } <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb24-10" data-line-number="10">         <span class="kw">if</span> within <span class="dv">5</span> left perception<span class="fu">.</span>wheels<span class="fu">.</span>left <span class="co">{-  -}</span> <span class="kw">then</span></a>
+<a class="sourceLine" id="cb24-11" data-line-number="11">            <span class="dt">Idle</span></a>
+<a class="sourceLine" id="cb24-12" data-line-number="12">         <span class="kw">else</span></a>
+<a class="sourceLine" id="cb24-13" data-line-number="13">            control</a></code></pre></div>
+</section><section id="control-is" class="slide level2">
+<h2>Control is…</h2>
+<ul>
+<li class="fragment">Often very functional</li>
+<li class="fragment">Small state machines</li>
+<li class="fragment">Layered, sometimes realtime</li>
 </ul>
 </section><section id="behaviour-is-the-core-of-your-elm-application" class="slide level2">
 <h2>Behaviour is the core of your Elm application</h2>
@@ -423,33 +530,51 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <p><img data-src="./img/behaviour-state-machine.jpg" /></p>
 </section><section id="behaviour-is-your-model" class="slide level2">
 <h2>Behaviour is your model</h2>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Behaviour</span></a>
-<a class="sourceLine" id="cb18-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="kw">type</span> <span class="dt">Behaviour</span></a>
-<a class="sourceLine" id="cb18-4" data-line-number="4">    <span class="fu">=</span> <span class="dt">Initializing</span> { openedClaw <span class="fu">:</span> <span class="dt">Bool</span>, closedClaw <span class="fu">:</span> <span class="dt">Bool</span> }</a>
-<a class="sourceLine" id="cb18-5" data-line-number="5">    <span class="fu">|</span> <span class="dt">FindingObject</span></a>
-<a class="sourceLine" id="cb18-6" data-line-number="6">    <span class="fu">|</span> <span class="dt">RemovingObject</span> (<span class="dt">List</span> <span class="dt">Control</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Behaviour</span></a>
+<a class="sourceLine" id="cb25-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="kw">type</span> <span class="dt">Behaviour</span></a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">    <span class="fu">=</span> <span class="dt">Initializing</span> { openedClaw <span class="fu">:</span> <span class="dt">Bool</span>, closedClaw <span class="fu">:</span> <span class="dt">Bool</span> }</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">    <span class="fu">|</span> <span class="dt">FindingObject</span></a>
+<a class="sourceLine" id="cb25-6" data-line-number="6">    <span class="fu">|</span> <span class="dt">RemovingObject</span> (<span class="dt">List</span> <span class="dt">Control</span>)</a></code></pre></div>
 </section><section id="behaviour-is-your-update-function" class="slide level2">
 <h2>Behaviour is your update function</h2>
-<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Behaviour</span></a>
-<a class="sourceLine" id="cb19-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">update <span class="fu">:</span></a>
-<a class="sourceLine" id="cb19-4" data-line-number="4">    <span class="dt">Perception</span></a>
-<a class="sourceLine" id="cb19-5" data-line-number="5">    <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
-<a class="sourceLine" id="cb19-6" data-line-number="6">    <span class="ot">-&gt;</span> <span class="dt">Behaviour</span></a>
-<a class="sourceLine" id="cb19-7" data-line-number="7">    <span class="ot">-&gt;</span> ( <span class="dt">Behaviour</span>, <span class="dt">Maybe</span> <span class="dt">Control</span> )</a>
-<a class="sourceLine" id="cb19-8" data-line-number="8">update perception currentControl behaviour <span class="fu">=</span></a>
-<a class="sourceLine" id="cb19-9" data-line-number="9">    <span class="co">-- ...</span></a></code></pre></div>
-</section><section id="code-explains-behaviour" class="slide level2">
-<h2>Code explains behaviour</h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">case</span> behaviour <span class="kw">of</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">    <span class="dt">FindingObject</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb20-3" data-line-number="3">        <span class="kw">case</span> ( claw, bumper, travelDirection) <span class="kw">of</span></a>
-<a class="sourceLine" id="cb20-4" data-line-number="4">            ( <span class="dt">Claw.Open</span>, <span class="dt">BumperPressed</span>, _ ) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb20-5" data-line-number="5">                ( behaviour, <span class="dt">Just</span> Control.grab )</a>
-<a class="sourceLine" id="cb20-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb20-7" data-line-number="7">            ( <span class="dt">Claw.Closed</span>, _, <span class="dt">Just</span> travelDirection ) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb20-8" data-line-number="8">                removeObject travelDirection</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Behaviour</span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">update <span class="fu">:</span></a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">    <span class="dt">Perception</span></a>
+<a class="sourceLine" id="cb26-5" data-line-number="5">    <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
+<a class="sourceLine" id="cb26-6" data-line-number="6">    <span class="ot">-&gt;</span> <span class="dt">Behaviour</span></a>
+<a class="sourceLine" id="cb26-7" data-line-number="7">    <span class="ot">-&gt;</span> ( <span class="dt">Behaviour</span>, <span class="dt">Maybe</span> <span class="dt">Control</span> )</a>
+<a class="sourceLine" id="cb26-8" data-line-number="8">update perception currentControl behaviour <span class="fu">=</span></a>
+<a class="sourceLine" id="cb26-9" data-line-number="9">    <span class="co">-- ...</span></a></code></pre></div>
+</section><section id="to-behaviour-control-is-like-a-message" class="slide level2">
+<h2>To behaviour, control is like a message</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">case</span> behaviour <span class="kw">of</span></a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">   <span class="dt">Initializing</span> context <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">      <span class="kw">if</span> Control.isIdle currentControl <span class="kw">then</span></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">         <span class="kw">if</span> not context<span class="fu">.</span>closedClaw <span class="kw">then</span></a>
+<a class="sourceLine" id="cb27-5" data-line-number="5">            ( <span class="dt">Initializing</span> { context <span class="fu">|</span> closedClaw <span class="fu">=</span> <span class="dt">True</span> }</a>
+<a class="sourceLine" id="cb27-6" data-line-number="6">            , <span class="dt">Just</span> Control.grab )</a>
+<a class="sourceLine" id="cb27-7" data-line-number="7">         <span class="kw">else</span> <span class="kw">if</span> not context<span class="fu">.</span>openedClaw <span class="kw">then</span></a>
+<a class="sourceLine" id="cb27-8" data-line-number="8">            ( <span class="dt">Initializing</span> { context <span class="fu">|</span> openedClaw <span class="fu">=</span> <span class="dt">True</span> }</a>
+<a class="sourceLine" id="cb27-9" data-line-number="9">            , <span class="dt">Just</span> Control.release )</a>
+<a class="sourceLine" id="cb27-10" data-line-number="10">         <span class="kw">else</span></a>
+<a class="sourceLine" id="cb27-11" data-line-number="11">            findObject</a>
+<a class="sourceLine" id="cb27-12" data-line-number="12">      <span class="kw">else</span></a>
+<a class="sourceLine" id="cb27-13" data-line-number="13">         ( behaviour, <span class="dt">Nothing</span> )</a></code></pre></div>
+</section><section id="behaviour-should-be-readable" class="slide level2">
+<h2>Behaviour should be <em>readable</em></h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw">case</span> behaviour <span class="kw">of</span></a>
+<a class="sourceLine" id="cb28-2" data-line-number="2">    <span class="dt">FindingObject</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb28-3" data-line-number="3">        <span class="kw">case</span> ( claw, bumper, travelDirection) <span class="kw">of</span></a>
+<a class="sourceLine" id="cb28-4" data-line-number="4">            ( <span class="dt">Claw.Open</span>, <span class="dt">BumperPressed</span>, _ ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb28-5" data-line-number="5">                ( behaviour, <span class="dt">Just</span> Control.grab )</a>
+<a class="sourceLine" id="cb28-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb28-7" data-line-number="7">            ( <span class="dt">Claw.Closed</span>, _, <span class="dt">Just</span> travelDirection ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb28-8" data-line-number="8">                removeObject travelDirection</a>
+<a class="sourceLine" id="cb28-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb28-10" data-line-number="10">            ( <span class="dt">Claw.Closed</span>, _, _ ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb28-11" data-line-number="11">                ( behaviour, <span class="dt">Just</span> Control.followLine )</a></code></pre></div>
 </section><section id="sequential-actions-are-slightly-awkward" class="slide level2">
 <h2>Sequential actions are slightly awkward</h2>
 <p>When we find an obstacle, we need to…</p>
@@ -461,20 +586,35 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <li class="fragment">Move back</li>
 <li class="fragment">Turn back</li>
 </ul>
+</section><section id="behaviours-can-require-arguments" class="slide level2">
+<h2>Behaviours can require arguments</h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb29-1" data-line-number="1">removeObject <span class="fu">:</span> <span class="dt">TravelDirection</span> <span class="ot">-&gt;</span> (<span class="dt">Behaviour</span>, <span class="dt">Maybe</span> <span class="dt">Control</span>)</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">removeObject direction <span class="fu">=</span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">   <span class="kw">let</span></a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">      turnLeft <span class="fu">=</span> Control.moveBy <span class="co">{- ... -}</span></a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">      turnRight <span class="fu">=</span> Control.moveBy <span class="co">{- ... -}</span></a>
+<a class="sourceLine" id="cb29-6" data-line-number="6">      ( turn, turnBack ) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb29-7" data-line-number="7">         <span class="kw">case</span> direction <span class="kw">of</span></a>
+<a class="sourceLine" id="cb29-8" data-line-number="8">            <span class="dt">Clockwise</span> <span class="ot">-&gt;</span> ( turnLeft, turnRight )</a>
+<a class="sourceLine" id="cb29-9" data-line-number="9">            <span class="dt">CounterClockwise</span> <span class="ot">-&gt;</span> ( turnRight, turnLeft )</a>
+<a class="sourceLine" id="cb29-10" data-line-number="10">      <span class="co">-- ...</span></a>
+<a class="sourceLine" id="cb29-11" data-line-number="11">      actions <span class="fu">=</span> [ turn, forward, release, reverse, turnBack ]</a>
+<a class="sourceLine" id="cb29-12" data-line-number="12">   <span class="kw">in</span></a>
+<a class="sourceLine" id="cb29-13" data-line-number="13">   ( <span class="dt">RemovingObject</span> actions, <span class="dt">Just</span> Control.idle )</a></code></pre></div>
 </section><section id="we-need-feedback-from-control" class="slide level2">
 <h2>We need feedback from control</h2>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" data-line-number="1">update perception currentControl behaviour <span class="fu">=</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2">   <span class="kw">case</span> behaviour <span class="kw">of</span></a>
-<a class="sourceLine" id="cb21-3" data-line-number="3">      <span class="dt">RemovingObject</span> controls <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb21-4" data-line-number="4">         <span class="kw">case</span> ( Control.isIdle currentControl, controls ) <span class="kw">of</span></a>
-<a class="sourceLine" id="cb21-5" data-line-number="5">            ( <span class="dt">True</span>,<span class="ot"> next ::</span> remaining ) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb21-6" data-line-number="6">               ( <span class="dt">RemovingObject</span> remaining, <span class="dt">Just</span> next )</a>
-<a class="sourceLine" id="cb21-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb21-8" data-line-number="8">            ( <span class="dt">True</span>, [] ) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb21-9" data-line-number="9">               findObject</a>
-<a class="sourceLine" id="cb21-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb21-11" data-line-number="11">            ( <span class="dt">False</span>, _ ) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb21-12" data-line-number="12">               ( behaviour, <span class="dt">Nothing</span> )</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb30-1" data-line-number="1">update perception currentControl behaviour <span class="fu">=</span></a>
+<a class="sourceLine" id="cb30-2" data-line-number="2">   <span class="kw">case</span> behaviour <span class="kw">of</span></a>
+<a class="sourceLine" id="cb30-3" data-line-number="3">      <span class="dt">RemovingObject</span> controls <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb30-4" data-line-number="4">         <span class="kw">case</span> ( Control.isIdle currentControl, controls ) <span class="kw">of</span></a>
+<a class="sourceLine" id="cb30-5" data-line-number="5">            ( <span class="dt">True</span>,<span class="ot"> next ::</span> remaining ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb30-6" data-line-number="6">               ( <span class="dt">RemovingObject</span> remaining, <span class="dt">Just</span> next )</a>
+<a class="sourceLine" id="cb30-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb30-8" data-line-number="8">            ( <span class="dt">True</span>, [] ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb30-9" data-line-number="9">               findObject</a>
+<a class="sourceLine" id="cb30-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb30-11" data-line-number="11">            ( <span class="dt">False</span>, _ ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb30-12" data-line-number="12">               ( behaviour, <span class="dt">Nothing</span> )</a></code></pre></div>
 </section><section id="behaviour-is" class="slide level2">
 <h2>Behaviour is…</h2>
 <ul>
@@ -482,114 +622,34 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <li class="fragment">Symbolic</li>
 <li class="fragment">Explainable</li>
 </ul>
-</section><section id="control-makes-things-move" class="slide level2">
-<h2>Control makes things move</h2>
-<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw">type</span> alias <span class="dt">Output</span> <span class="fu">=</span></a>
-<a class="sourceLine" id="cb22-2" data-line-number="2">    { leftMotor <span class="fu">:</span> <span class="dt">Float</span></a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">    , rightMotor <span class="fu">:</span> <span class="dt">Float</span></a>
-<a class="sourceLine" id="cb22-4" data-line-number="4">    , clawMotor <span class="fu">:</span> <span class="dt">Float</span></a>
-<a class="sourceLine" id="cb22-5" data-line-number="5">    }</a>
-<a class="sourceLine" id="cb22-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb22-7" data-line-number="7"><span class="co">-- module Control</span></a>
-<a class="sourceLine" id="cb22-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb22-9" data-line-number="9">update <span class="fu">:</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
-<a class="sourceLine" id="cb22-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb22-11" data-line-number="11">output <span class="fu">:</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">Output</span></a></code></pre></div>
-</section><section id="control-constrains-the-things-the-robot-can-do" class="slide level2">
-<h2>Control constrains the things the robot can do</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">type</span> <span class="dt">Control</span></a>
-<a class="sourceLine" id="cb23-2" data-line-number="2">    <span class="fu">=</span> <span class="dt">Idle</span></a>
-<a class="sourceLine" id="cb23-3" data-line-number="3">    <span class="fu">|</span> <span class="dt">Grab</span> <span class="dt">Timer</span></a>
-<a class="sourceLine" id="cb23-4" data-line-number="4">    <span class="fu">|</span> <span class="dt">Release</span> <span class="dt">Timer</span></a>
-<a class="sourceLine" id="cb23-5" data-line-number="5">    <span class="fu">|</span> <span class="dt">FollowLine</span></a>
-<a class="sourceLine" id="cb23-6" data-line-number="6">    <span class="fu">|</span> <span class="dt">MoveTo</span> { left <span class="fu">:</span> <span class="dt">Int</span>, right <span class="fu">:</span> <span class="dt">Int</span> }</a>
-<a class="sourceLine" id="cb23-7" data-line-number="7">    <span class="fu">|</span> <span class="dt">MoveBy</span> { leftDelta <span class="fu">:</span> <span class="dt">Int</span>, rightDelta <span class="fu">:</span> <span class="dt">Int</span> }</a></code></pre></div>
-</section><section id="some-control-is-trivial" class="slide level2">
-<h2>Some control is trivial</h2>
-<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" data-line-number="1">idle <span class="fu">:</span> <span class="dt">Control</span></a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">idle <span class="fu">=</span> <span class="dt">Idle</span></a>
-<a class="sourceLine" id="cb24-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb24-4" data-line-number="4">update <span class="fu">:</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
-<a class="sourceLine" id="cb24-5" data-line-number="5">update perception control <span class="fu">=</span></a>
-<a class="sourceLine" id="cb24-6" data-line-number="6">    <span class="kw">case</span> control <span class="kw">of</span></a>
-<a class="sourceLine" id="cb24-7" data-line-number="7">        <span class="dt">Idle</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb24-8" data-line-number="8">            control</a>
-<a class="sourceLine" id="cb24-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb24-10" data-line-number="10">output <span class="fu">:</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">Output</span></a>
-<a class="sourceLine" id="cb24-11" data-line-number="11">output control perception input <span class="fu">=</span></a>
-<a class="sourceLine" id="cb24-12" data-line-number="12">    <span class="kw">case</span> control <span class="kw">of</span></a>
-<a class="sourceLine" id="cb24-13" data-line-number="13">        <span class="dt">Idle</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb24-14" data-line-number="14">            { leftMotor <span class="fu">=</span> <span class="fl">0.0</span></a>
-<a class="sourceLine" id="cb24-15" data-line-number="15">            , rightMotor <span class="fu">=</span> <span class="fl">0.0</span></a>
-<a class="sourceLine" id="cb24-16" data-line-number="16">            , clawMotor <span class="fu">=</span> <span class="fl">0.0</span></a>
-<a class="sourceLine" id="cb24-17" data-line-number="17">            }</a></code></pre></div>
-</section><section id="some-control-is-a-bit-stateful" class="slide level2">
-<h2>Some control is a bit stateful</h2>
-<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb25-1" data-line-number="1">update <span class="fu">:</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
-<a class="sourceLine" id="cb25-2" data-line-number="2">update perception control <span class="fu">=</span></a>
-<a class="sourceLine" id="cb25-3" data-line-number="3">   <span class="kw">case</span> control <span class="kw">of</span></a>
-<a class="sourceLine" id="cb25-4" data-line-number="4">      <span class="dt">Grab</span> <span class="dt">Starting</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb25-5" data-line-number="5">         <span class="dt">Grab</span> (<span class="dt">Since</span> perception<span class="fu">.</span>time)</a>
-<a class="sourceLine" id="cb25-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb25-7" data-line-number="7">      <span class="dt">Grab</span> (<span class="dt">Since</span> startTime) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb25-8" data-line-number="8">         <span class="kw">if</span> perception<span class="fu">.</span>time <span class="fu">-</span> startTime <span class="fu">&gt;</span> grabDuration <span class="kw">then</span></a>
-<a class="sourceLine" id="cb25-9" data-line-number="9">            <span class="dt">Idle</span></a>
-<a class="sourceLine" id="cb25-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb25-11" data-line-number="11">         <span class="kw">else</span></a>
-<a class="sourceLine" id="cb25-12" data-line-number="12">            control</a></code></pre></div>
-</section><section id="some-control-uses-state-machines" class="slide level2">
-<h2>Some control uses state machines</h2>
-<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1">update <span class="fu">:</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Control</span></a>
-<a class="sourceLine" id="cb26-2" data-line-number="2">update perception control <span class="fu">=</span></a>
-<a class="sourceLine" id="cb26-3" data-line-number="3">   <span class="kw">case</span> control <span class="kw">of</span></a>
-<a class="sourceLine" id="cb26-4" data-line-number="4">      <span class="dt">MoveBy</span> { leftDelta, rightDelta } <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb26-5" data-line-number="5">         <span class="dt">MoveTo</span></a>
-<a class="sourceLine" id="cb26-6" data-line-number="6">            { left <span class="fu">=</span> perception<span class="fu">.</span>wheels<span class="fu">.</span>left <span class="fu">+</span> leftDelta</a>
-<a class="sourceLine" id="cb26-7" data-line-number="7">            , right <span class="fu">=</span> perception<span class="fu">.</span>wheels<span class="fu">.</span>right <span class="fu">+</span> rightDelta</a>
-<a class="sourceLine" id="cb26-8" data-line-number="8">            }</a>
-<a class="sourceLine" id="cb26-9" data-line-number="9">      <span class="dt">MoveTo</span> { left, right } <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb26-10" data-line-number="10">         <span class="kw">if</span> within <span class="dv">5</span> left perception<span class="fu">.</span>wheels<span class="fu">.</span>left <span class="co">{-  -}</span> <span class="kw">then</span></a>
-<a class="sourceLine" id="cb26-11" data-line-number="11">            <span class="dt">Idle</span></a>
-<a class="sourceLine" id="cb26-12" data-line-number="12">         <span class="kw">else</span></a>
-<a class="sourceLine" id="cb26-13" data-line-number="13">            control</a></code></pre></div>
-</section><section id="some-control-is-stateless" class="slide level2">
-<h2>Some control is stateless</h2>
-<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" data-line-number="1">output <span class="fu">:</span> <span class="dt">Control</span> <span class="ot">-&gt;</span> <span class="dt">Perception</span> <span class="ot">-&gt;</span> <span class="dt">Input</span> <span class="ot">-&gt;</span> <span class="dt">Output</span></a>
-<a class="sourceLine" id="cb27-2" data-line-number="2">output control perception input <span class="fu">=</span></a>
-<a class="sourceLine" id="cb27-3" data-line-number="3">    <span class="kw">case</span> control <span class="kw">of</span></a>
-<a class="sourceLine" id="cb27-4" data-line-number="4">        <span class="dt">FollowLine</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb27-5" data-line-number="5">            <span class="kw">let</span></a>
-<a class="sourceLine" id="cb27-6" data-line-number="6">                brightness <span class="fu">=</span></a>
-<a class="sourceLine" id="cb27-7" data-line-number="7">                    LightCalibration.corrected perception<span class="fu">.</span>lightCalibration input<span class="fu">.</span>lightSensor</a>
-<a class="sourceLine" id="cb27-8" data-line-number="8">            <span class="kw">in</span></a>
-<a class="sourceLine" id="cb27-9" data-line-number="9">            { leftMotor <span class="fu">=</span> brightness</a>
-<a class="sourceLine" id="cb27-10" data-line-number="10">            , rightMotor <span class="fu">=</span> <span class="fl">1.0</span> <span class="fu">-</span> brightness</a>
-<a class="sourceLine" id="cb27-11" data-line-number="11">            , clawMotor <span class="fu">=</span> <span class="fl">0.0</span></a>
-<a class="sourceLine" id="cb27-12" data-line-number="12">            , lights <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb27-13" data-line-number="13">            }</a></code></pre></div>
-</section><section id="control-is" class="slide level2">
-<h2>Control is…</h2>
-<ul>
-<li class="fragment">Often very functional</li>
-<li class="fragment">Small state machines</li>
-<li class="fragment">Layered, sometimes realtime</li>
-</ul>
 </section></section>
-<section><section id="wrapping-up" class="title-slide slide level1"><h1>Wrapping Up</h1></section><section id="is-it-effective-for-robotics" class="slide level2">
-<h2>Is it effective for robotics?</h2>
+<section><section id="does-it-work-1" class="title-slide slide level1"><h1>Does it work?</h1></section></section>
+<section><section id="wrapping-up" class="title-slide slide level1"><h1>Wrapping Up</h1></section><section id="can-elm-be-used-to-program-a-robot" class="slide level2">
+<h2>Can Elm be used to program a robot?</h2>
+<p>Yes!</p>
+</section><section id="is-it-effective" class="slide level2">
+<h2>Is it effective?</h2>
 <ul>
-<li class="fragment">Is Elm an effective <em>language</em>?</li>
 <li class="fragment">Is Elm an effective <em>platform</em>?</li>
+<li class="fragment">Is Elm an effective <em>language</em>?</li>
 </ul>
+</section><section id="is-it-delightful" class="slide level2">
+<h2>Is it delightful?</h2>
+<p>I think so!</p>
+<p>Decide for yourself!</p>
+<p><a href="https://github.com/adeschamps/programming-robots-with-elm/" class="uri">https://github.com/adeschamps/programming-robots-with-elm/</a></p>
 </section><section id="thank-you" class="slide level2">
 <h2>Thank you!</h2>
+<p>Matt Griffith</p>
+<p>Mike Onslow + Elm Detroit</p>
+<p><a href="https://www.meetup.com/elm-detroit/" class="uri">https://www.meetup.com/elm-detroit/</a></p>
 <p><img data-src="https://avatars3.githubusercontent.com/u/30929018?s=200&amp;v=4" /></p>
 </section></section>
     </div>
   </div>
 
-  <script src="http://lab.hakim.se/reveal-js/lib/js/head.min.js"></script>
-  <script src="http://lab.hakim.se/reveal-js/js/reveal.js"></script>
+  <script src="./reveal.js/lib/js/head.min.js"></script>
+  <script src="./reveal.js/js/reveal.js"></script>
 
   <script>
 
@@ -603,9 +663,9 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 
         // Optional reveal.js plugins
         dependencies: [
-          { src: 'http://lab.hakim.se/reveal-js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-          { src: 'http://lab.hakim.se/reveal-js/plugin/zoom-js/zoom.js', async: true },
-          { src: 'http://lab.hakim.se/reveal-js/plugin/notes/notes.js', async: true }
+          { src: './reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: './reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: './reveal.js/plugin/notes/notes.js', async: true }
         ]
       });
     </script>
