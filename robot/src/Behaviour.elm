@@ -62,7 +62,7 @@ update perception currentControl behaviour =
                 ( True, [] ) ->
                     findObject
 
-                _ ->
+                ( False, _ ) ->
                     ( behaviour, Nothing )
 
 
@@ -73,11 +73,6 @@ findObject =
 
 removeObject : Perception.TravelDirection -> ( Behaviour, Maybe Control )
 removeObject direction =
-    ( RemovingObject (removeControls direction), Just Control.idle )
-
-
-removeControls : Perception.TravelDirection -> List Control
-removeControls direction =
     let
         turnLeft =
             Control.moveBy { leftDelta = -180, rightDelta = 180 }
@@ -101,13 +96,16 @@ removeControls direction =
 
         release =
             Control.release
+
+        actions =
+            [ turn
+            , forward
+            , release
+            , reverse
+            , turnBack
+            ]
     in
-    [ turn
-    , forward
-    , release
-    , reverse
-    , turnBack
-    ]
+    ( RemovingObject actions, Just Control.idle )
 
 
 metrics : Behaviour -> Maybe Int -> List InfluxDB.Datum
