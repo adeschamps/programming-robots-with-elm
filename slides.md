@@ -295,6 +295,7 @@ calculateCurve curvature current =
 
             else
                 current
+        -- ...
 ```
 
 ## We get lost!
@@ -541,8 +542,8 @@ When we find an obstacle, we need to...
 ```haskell
 update perception currentControl behaviour =
    case behaviour of
-      RemovingObject controls ->
-         case ( Control.isIdle currentControl, controls ) of
+      RemovingObject steps ->
+         case ( Control.isIdle currentControl, steps ) of
             ( True, next :: remaining ) ->
                ( RemovingObject remaining, Just next )
 
@@ -569,8 +570,8 @@ Yes!
 
 ## Is it effective?
 
-- Is Elm an effective _platform_?
-- Is Elm an effective _language_?
+- Is Elm an effective _platform_ for robots?
+- Is Elm an effective _language_ for robots?
 
 ## Is it delightful?
 

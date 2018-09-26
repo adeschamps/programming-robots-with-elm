@@ -56,10 +56,10 @@ update perception currentControl behaviour =
                 Just travelDirection ->
                     removeObject travelDirection
 
-        RemovingObject controls ->
-            case ( Control.isIdle currentControl, controls ) of
-                ( True, nextControl :: remainingControls ) ->
-                    ( RemovingObject remainingControls, Just nextControl )
+        RemovingObject steps ->
+            case ( Control.isIdle currentControl, steps ) of
+                ( True, next :: remaining ) ->
+                    ( RemovingObject remaining, Just next )
 
                 ( True, [] ) ->
                     findObject

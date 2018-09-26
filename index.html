@@ -351,7 +351,8 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <a class="sourceLine" id="cb13-9" data-line-number="9">                <span class="dt">Right</span></a>
 <a class="sourceLine" id="cb13-10" data-line-number="10"></a>
 <a class="sourceLine" id="cb13-11" data-line-number="11">            <span class="kw">else</span></a>
-<a class="sourceLine" id="cb13-12" data-line-number="12">                current</a></code></pre></div>
+<a class="sourceLine" id="cb13-12" data-line-number="12">                current</a>
+<a class="sourceLine" id="cb13-13" data-line-number="13">        <span class="co">-- ...</span></a></code></pre></div>
 </section><section id="we-get-lost" class="slide level2">
 <h2>We get lost!</h2>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1">newCurve <span class="fu">=</span></a>
@@ -557,8 +558,8 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <h2>We need feedback from control</h2>
 <div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" data-line-number="1">update perception currentControl behaviour <span class="fu">=</span></a>
 <a class="sourceLine" id="cb27-2" data-line-number="2">   <span class="kw">case</span> behaviour <span class="kw">of</span></a>
-<a class="sourceLine" id="cb27-3" data-line-number="3">      <span class="dt">RemovingObject</span> controls <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb27-4" data-line-number="4">         <span class="kw">case</span> ( Control.isIdle currentControl, controls ) <span class="kw">of</span></a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">      <span class="dt">RemovingObject</span> steps <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">         <span class="kw">case</span> ( Control.isIdle currentControl, steps ) <span class="kw">of</span></a>
 <a class="sourceLine" id="cb27-5" data-line-number="5">            ( <span class="dt">True</span>,<span class="ot"> next ::</span> remaining ) <span class="ot">-&gt;</span></a>
 <a class="sourceLine" id="cb27-6" data-line-number="6">               ( <span class="dt">RemovingObject</span> remaining, <span class="dt">Just</span> next )</a>
 <a class="sourceLine" id="cb27-7" data-line-number="7"></a>
@@ -582,8 +583,8 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 </section><section id="is-it-effective" class="slide level2">
 <h2>Is it effective?</h2>
 <ul>
-<li class="fragment">Is Elm an effective <em>platform</em>?</li>
-<li class="fragment">Is Elm an effective <em>language</em>?</li>
+<li class="fragment">Is Elm an effective <em>platform</em> for robots?</li>
+<li class="fragment">Is Elm an effective <em>language</em> for robots?</li>
 </ul>
 </section><section id="is-it-delightful" class="slide level2">
 <h2>Is it delightful?</h2>
