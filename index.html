@@ -529,14 +529,19 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <a class="sourceLine" id="cb25-11" data-line-number="11">                ( behaviour, <span class="dt">Just</span> Control.followLine )</a></code></pre></div>
 </section><section id="some-behaviours-are-parameterized" class="slide level2">
 <h2>Some behaviours are parameterized</h2>
-<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">case</span> behaviour <span class="kw">of</span></a>
-<a class="sourceLine" id="cb26-2" data-line-number="2">    <span class="dt">CarryingObject</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb26-3" data-line-number="3">        <span class="kw">case</span> perception<span class="fu">.</span>travelDirection <span class="kw">of</span></a>
-<a class="sourceLine" id="cb26-4" data-line-number="4">            <span class="dt">Nothing</span> <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb26-5" data-line-number="5">                ( behaviour, <span class="dt">Just</span> Control.followLine )</a>
-<a class="sourceLine" id="cb26-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb26-7" data-line-number="7">            <span class="dt">Just</span> travelDirection <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb26-8" data-line-number="8">                removeObject travelDirection</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1">removeObject <span class="fu">:</span> <span class="dt">TravelDirection</span> <span class="ot">-&gt;</span> <span class="dt">Behaviour</span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb26-3" data-line-number="3"><span class="kw">type</span> <span class="dt">Behaviour</span></a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">    <span class="fu">=</span> <span class="dt">RemovingObject</span> (<span class="dt">List</span> <span class="dt">Control</span>) <span class="fu">|</span> <span class="co">-- ...</span></a>
+<a class="sourceLine" id="cb26-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb26-6" data-line-number="6"><span class="kw">case</span> behaviour <span class="kw">of</span></a>
+<a class="sourceLine" id="cb26-7" data-line-number="7">    <span class="dt">CarryingObject</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb26-8" data-line-number="8">        <span class="kw">case</span> perception<span class="fu">.</span>travelDirection <span class="kw">of</span></a>
+<a class="sourceLine" id="cb26-9" data-line-number="9">            <span class="dt">Nothing</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb26-10" data-line-number="10">                ( behaviour, <span class="dt">Just</span> Control.followLine )</a>
+<a class="sourceLine" id="cb26-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb26-12" data-line-number="12">            <span class="dt">Just</span> travelDirection <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb26-13" data-line-number="13">                removeObject travelDirection</a></code></pre></div>
 </section><section id="sequential-actions-are-slightly-awkward" class="slide level2">
 <h2>Sequential actions are slightly awkward</h2>
 <p>When we find an obstacle, we need to…</p>
@@ -548,35 +553,20 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <li class="fragment">Move back</li>
 <li class="fragment">Turn back</li>
 </ul>
-</section><section id="behaviours-can-require-arguments" class="slide level2">
-<h2>Behaviours can require arguments</h2>
-<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" data-line-number="1">removeObject <span class="fu">:</span> <span class="dt">TravelDirection</span> <span class="ot">-&gt;</span> (<span class="dt">Behaviour</span>, <span class="dt">Maybe</span> <span class="dt">Control</span>)</a>
-<a class="sourceLine" id="cb27-2" data-line-number="2">removeObject direction <span class="fu">=</span></a>
-<a class="sourceLine" id="cb27-3" data-line-number="3">   <span class="kw">let</span></a>
-<a class="sourceLine" id="cb27-4" data-line-number="4">      turnLeft <span class="fu">=</span> Control.moveBy <span class="co">{- ... -}</span></a>
-<a class="sourceLine" id="cb27-5" data-line-number="5">      turnRight <span class="fu">=</span> Control.moveBy <span class="co">{- ... -}</span></a>
-<a class="sourceLine" id="cb27-6" data-line-number="6">      ( turn, turnBack ) <span class="fu">=</span></a>
-<a class="sourceLine" id="cb27-7" data-line-number="7">         <span class="kw">case</span> direction <span class="kw">of</span></a>
-<a class="sourceLine" id="cb27-8" data-line-number="8">            <span class="dt">Clockwise</span> <span class="ot">-&gt;</span> ( turnLeft, turnRight )</a>
-<a class="sourceLine" id="cb27-9" data-line-number="9">            <span class="dt">CounterClockwise</span> <span class="ot">-&gt;</span> ( turnRight, turnLeft )</a>
-<a class="sourceLine" id="cb27-10" data-line-number="10">      <span class="co">-- ...</span></a>
-<a class="sourceLine" id="cb27-11" data-line-number="11">      actions <span class="fu">=</span> [ turn, forward, release, reverse, turnBack ]</a>
-<a class="sourceLine" id="cb27-12" data-line-number="12">   <span class="kw">in</span></a>
-<a class="sourceLine" id="cb27-13" data-line-number="13">   ( <span class="dt">RemovingObject</span> actions, <span class="dt">Just</span> Control.idle )</a></code></pre></div>
 </section><section id="we-need-feedback-from-control" class="slide level2">
 <h2>We need feedback from control</h2>
-<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb28-1" data-line-number="1">update perception currentControl behaviour <span class="fu">=</span></a>
-<a class="sourceLine" id="cb28-2" data-line-number="2">   <span class="kw">case</span> behaviour <span class="kw">of</span></a>
-<a class="sourceLine" id="cb28-3" data-line-number="3">      <span class="dt">RemovingObject</span> controls <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb28-4" data-line-number="4">         <span class="kw">case</span> ( Control.isIdle currentControl, controls ) <span class="kw">of</span></a>
-<a class="sourceLine" id="cb28-5" data-line-number="5">            ( <span class="dt">True</span>,<span class="ot"> next ::</span> remaining ) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb28-6" data-line-number="6">               ( <span class="dt">RemovingObject</span> remaining, <span class="dt">Just</span> next )</a>
-<a class="sourceLine" id="cb28-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb28-8" data-line-number="8">            ( <span class="dt">True</span>, [] ) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb28-9" data-line-number="9">               findObject</a>
-<a class="sourceLine" id="cb28-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb28-11" data-line-number="11">            ( <span class="dt">False</span>, _ ) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb28-12" data-line-number="12">               ( behaviour, <span class="dt">Nothing</span> )</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" data-line-number="1">update perception currentControl behaviour <span class="fu">=</span></a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">   <span class="kw">case</span> behaviour <span class="kw">of</span></a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">      <span class="dt">RemovingObject</span> controls <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">         <span class="kw">case</span> ( Control.isIdle currentControl, controls ) <span class="kw">of</span></a>
+<a class="sourceLine" id="cb27-5" data-line-number="5">            ( <span class="dt">True</span>,<span class="ot"> next ::</span> remaining ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb27-6" data-line-number="6">               ( <span class="dt">RemovingObject</span> remaining, <span class="dt">Just</span> next )</a>
+<a class="sourceLine" id="cb27-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb27-8" data-line-number="8">            ( <span class="dt">True</span>, [] ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb27-9" data-line-number="9">               findObject</a>
+<a class="sourceLine" id="cb27-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb27-11" data-line-number="11">            ( <span class="dt">False</span>, _ ) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb27-12" data-line-number="12">               ( behaviour, <span class="dt">Nothing</span> )</a></code></pre></div>
 </section><section id="behaviour-is" class="slide level2">
 <h2>Behaviour is…</h2>
 <ul>

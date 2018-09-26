@@ -510,6 +510,11 @@ case behaviour of
 ## Some behaviours are parameterized
 
 ```haskell
+removeObject : TravelDirection -> Behaviour
+
+type Behaviour
+    = RemovingObject (List Control) | -- ...
+
 case behaviour of
     CarryingObject ->
         case perception.travelDirection of
@@ -530,24 +535,6 @@ When we find an obstacle, we need to...
 - Let it go
 - Move back
 - Turn back
-
-## Behaviours can require arguments
-
-```haskell
-removeObject : TravelDirection -> (Behaviour, Maybe Control)
-removeObject direction =
-   let
-      turnLeft = Control.moveBy {- ... -}
-      turnRight = Control.moveBy {- ... -}
-      ( turn, turnBack ) =
-         case direction of
-            Clockwise -> ( turnLeft, turnRight )
-            CounterClockwise -> ( turnRight, turnLeft )
-      -- ...
-      actions = [ turn, forward, release, reverse, turnBack ]
-   in
-   ( RemovingObject actions, Just Control.idle )
-```
 
 ## We need feedback from control
 
