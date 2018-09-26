@@ -581,7 +581,7 @@ Decide for yourself!
 
 <https://github.com/adeschamps/programming-robots-with-elm/>
 
-@adeschamps
+Slack: adeschamps
 
 anthony.j.deschamps@gmail.com
 
