@@ -39,11 +39,7 @@ C++, Python, Go, JavaScript
 - Is it an _effective_ language for robots?
 - Is it a _delightful_ language for robots?
 
-## Three areas of robotics
-
-- Perception
-- Behaviour
-- Control
+## Robotics is about three things
 
 ![](./img/robotics-stick-figure.jpg)
 
@@ -77,46 +73,25 @@ type alias Output =
 
 ## A simple robot
 
-- Follow a line
-- Don't crash into things
+Follow a line
 
-## Don't crash into things
-
-```haskell
-type alias State = (Front, Float)
-
-type Front = Blocked | Unblocked
-
-update : Input -> State -> State
-update input _ =
-    let front =
-        if input.distanceSensor < 50 then
-            Blocked
-        else
-            Unblocked
-    in
-    (front, input.lightSensor)
-```
-
-## Follow a line
+## Zig zag
 
 ![](./img/line-following.jpg)
 
 ## Follow a line
 
 ```haskell
-output : State -> State
-output (front, lightSensor) input =
-    case front of
-        Blocked ->
-            { leftMotor = 0
-            , rightMotor = 0
-            }
+update : Input -> State -> State
+update input _ =
+    { lightSensor = input.lightSensor
+    }
 
-        Unblocked ->
-            { leftMotor = lightSensor
-            , rightMotor = 1.0 - lightSensor
-            }
+output : State -> Output
+output { lightSensor } =
+    { leftMotor = lightSensor
+    , rightMotor = 1.0 - lightSensor
+    }
 ```
 
 # Does it work?
@@ -126,6 +101,8 @@ output (front, lightSensor) input =
 ## Ports!
 
 ```haskell
+port module Robot
+
 port inputs : (Input -> msg) -> Sub msg
 
 port outputs : Output -> Cmd msg
@@ -195,6 +172,10 @@ setInterval(updateInput, 25);
 - Grab things that you bump into
 - Move them to the _outside_ of the track
 
+##
+
+![](./img/dataflow.jpg)
+
 ## The model
 
 ```haskell
@@ -212,11 +193,7 @@ init =
     }
 ```
 
-##
-
-![](./img/dataflow.jpg)
-
-## Main update
+## The update function
 
 ```{.haskell}
 update input { perception, behaviour, control } =
@@ -237,14 +214,6 @@ update input { perception, behaviour, control } =
    , behaviour = newBehaviour
    , control = maybeControl |> Maybe.withDefault newControl
    }
-```
-
-## Main output
-
-```haskell
-output : Model -> Output
-output { perception, control } =
-    Control.output control perception
 ```
 
 ## Perception turns raw data into meaningful information
@@ -307,13 +276,6 @@ type State
         }
 ```
 
-## Measure curvature
-
-$$delta = \Delta_{left} - \Delta_{right}$$
-$$totalTravel = \Delta_{left} + \Delta_{right}$$
-$$raw = delta / totalTravel$$
-$$average_n = \alpha \cdot raw + (1-\alpha) \cdot average_{n-1}$$
-
 ## Categorize curve
 
 ![](./img/curve-state-machine.jpg)
@@ -324,24 +286,23 @@ $$average_n = \alpha \cdot raw + (1-\alpha) \cdot average_{n-1}$$
 calculateCurve : Float -> Curve -> Curve
 calculateCurve curvature current =
     case current of
-        Unknown ->
-            if curvature > -0.2 && curvature < 0.2 then
-                Straight
-            else
-                current
-        Left ->
-            if curvature > -0.2 then
-                Straight
+        Straight ->
+            if curvature < -0.25 then
+                Left
+
+            else if curvature > 0.25 then
+                Right
+
             else
                 current
 ```
 
-## Things go wrong!
+## We get lost!
 
 ```haskell
 newCurve =
     calculateCurve average state.curve
-    |> resetIfExtreme average
+        |> resetIfExtreme average
 
 -- ...
 
@@ -372,9 +333,8 @@ type alias Perception =
 
 ```haskell
 let
-    wheels = { left = input.leftMotor
-             , right = input.rightMotor }
-    curvature = Curvature.update wheels perception.curvature
+    curvature = Curvature.update {- ... -}
+
     travelDirection =
         case Curvature.curve curvature of
             Curvature.Unknown -> Nothing
@@ -390,7 +350,7 @@ in
 
 - Often very functional
 - Small state machines
-- Sometimes math heavy
+- Sometimes computationally heavy
 
 ## Control makes things move
 
@@ -497,7 +457,7 @@ update perception control =
 
 - Often very functional
 - Small state machines
-- Layered, sometimes realtime
+- Layered
 
 ## Behaviour is the core of your Elm application
 
@@ -531,24 +491,6 @@ update perception currentControl behaviour =
     -- ...
 ```
 
-## To behaviour, control is like a message
-
-```haskell
-case behaviour of
-   Initializing context ->
-      if Control.isIdle currentControl then
-         if not context.closedClaw then
-            ( Initializing { context | closedClaw = True }
-            , Just Control.grab )
-         else if not context.openedClaw then
-            ( Initializing { context | openedClaw = True }
-            , Just Control.release )
-         else
-            findObject
-      else
-         ( behaviour, Nothing )
-```
-
 ## Behaviour should be _readable_
 
 ```haskell
@@ -565,7 +507,7 @@ case behaviour of
                 ( behaviour, Just Control.followLine )
 ```
 
-## Some transitions require information
+## Some behaviours are parameterized
 
 ```haskell
 case behaviour of
@@ -650,6 +592,10 @@ I think so!
 Decide for yourself!
 
 <https://github.com/adeschamps/programming-robots-with-elm/>
+
+@adeschamps
+
+anthony.j.deschamps@gmail.com
 
 ## Thank you!
 
